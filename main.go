@@ -14,15 +14,7 @@ import (
 	"github.com/otie173/odncore/utils/logger"
 )
 
-func main() {
-	logger.Register()
-
-	cfg := config.NewConfig()
-	err := cfg.Load()
-	if err != nil {
-		log.Fatal("Failed to load config: ", err)
-	}
-
+func run(cfg config.Config) {
 	server := server.New(cfg.Address, cfg.MaxPlayers)
 	io.SetupReadHandler(server)
 	route.SetupRoutes(server)
@@ -32,7 +24,6 @@ func main() {
 			log.Fatal("Failed to start server: ", err)
 		}
 	}()
-
 	log.Println("Server is running. Press CTRL+C to stop.")
 
 	// Graceful shutdownc
@@ -50,4 +41,16 @@ func main() {
 	} else {
 		log.Println("Config saved successfully")
 	}
+}
+
+func main() {
+	logger.Register()
+
+	cfg := config.NewConfig()
+	err := cfg.Load()
+	if err != nil {
+		log.Fatal("Failed to load config: ", err)
+	}
+
+	run(*cfg)
 }
