@@ -17,10 +17,14 @@ func StartServer(addr string) {
 	logger.Printf("Server was started on %s\n", addr)
 }
 
-func PlayerConnected(playerID byte) {
-	logger.Printf("Player connected: id%d\n", playerID)
+func StopServer() {
+	logger.Println("Server was stopped")
 }
 
-func PlayerDisconnected(playerID byte) {
-	logger.Printf("Player disconnected: id%d\n", playerID)
+func PlayerConnected(playerAddr string) {
+	logger.Printf("Player connected: %s\n", playerAddr)
+}
+
+func PlayerDisconnected(playerAddr string) {
+	logger.Printf("Player disconnected: %s\n", playerAddr)
 }
