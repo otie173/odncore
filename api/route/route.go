@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/otie173/odncore/api/handler"
-	"github.com/otie173/odncore/api/setup"
+	"github.com/otie173/odncore/core/network/server"
 )
 
-func SetupRoutes(api setup.API) {
-	http.HandleFunc("GET /api/about", handler.AboutHandler(api))
+func SetupRoutes(s *server.Server) {
+	http.HandleFunc("GET /api/about", handler.AboutHandler(s))
 }

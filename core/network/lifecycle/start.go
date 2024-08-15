@@ -4,11 +4,11 @@ import (
 	"net/http"
 
 	"github.com/olahol/melody"
-	"github.com/otie173/odncore/core/network/types"
+	"github.com/otie173/odncore/core/network/server"
 	"github.com/otie173/odncore/utils/logger"
 )
 
-func Start(s *types.Server) error {
+func Start(s *server.Server) error {
 	http.HandleFunc("GET /", func(res http.ResponseWriter, req *http.Request) {
 		s.Websocket.HandleRequest(res, req)
 	})
