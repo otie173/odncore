@@ -4,8 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/otie173/odncore/core/network/info"
-	"github.com/otie173/odncore/core/network/server"
+	"github.com/otie173/odncore/core/server"
 )
 
 func respondJSON(w http.ResponseWriter, data interface{}) {
@@ -17,7 +16,7 @@ func respondJSON(w http.ResponseWriter, data interface{}) {
 
 func AboutHandler(s *server.Server) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		info := info.GetInfo(s)
+		info := s.GetInfo()
 		respondJSON(w, info)
 	}
 }

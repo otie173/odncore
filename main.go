@@ -7,20 +7,18 @@ import (
 	"syscall"
 
 	"github.com/otie173/odncore/api/route"
-	"github.com/otie173/odncore/core/network/io"
-	"github.com/otie173/odncore/core/network/lifecycle"
-	"github.com/otie173/odncore/core/network/server"
+	"github.com/otie173/odncore/core/server"
 	"github.com/otie173/odncore/utils/config"
 	"github.com/otie173/odncore/utils/logger"
 )
 
 func run(cfg config.Config) {
 	server := server.New(cfg.Address, cfg.MaxPlayers)
-	io.SetupReadHandler(server)
+	server.SetupReadHandler()
 	route.SetupRoutes(server)
 
 	go func() {
-		if err := lifecycle.Start(server); err != nil {
+		if err := server.Start(); err != nil {
 			log.Fatal("Failed to start server: ", err)
 		}
 	}()
@@ -32,7 +30,7 @@ func run(cfg config.Config) {
 	<-signalChan
 
 	log.Println("Shutting down server")
-	if err := lifecycle.Stop(server); err != nil {
+	if err := server.Stop(); err != nil {
 		log.Println("Error during server shutdown:", err)
 	}
 

@@ -1,14 +1,13 @@
-package lifecycle
+package server
 
 import (
 	"net/http"
 
 	"github.com/olahol/melody"
-	"github.com/otie173/odncore/core/network/server"
 	"github.com/otie173/odncore/utils/logger"
 )
 
-func Start(s *server.Server) error {
+func (s *Server) Start() error {
 	http.HandleFunc("GET /", func(res http.ResponseWriter, req *http.Request) {
 		s.Websocket.HandleRequest(res, req)
 	})
@@ -34,4 +33,10 @@ func Start(s *server.Server) error {
 
 	logger.StartServer(s.Addr)
 	return http.ListenAndServe(s.Addr, nil)
+}
+
+func (s *Server) Stop() error {
+	s.Websocket.Close()
+	logger.StopServer()
+	return nil
 }
