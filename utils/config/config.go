@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/json"
+	"log"
 	"os"
 )
 
@@ -30,7 +31,7 @@ func (c *Config) Load() error {
 
 	file, err := os.ReadFile(CONFIG_PATH)
 	if err != nil {
-		return err
+		log.Fatal("Failed to load config: ", err)
 	}
 
 	return json.Unmarshal(file, c)
@@ -39,7 +40,9 @@ func (c *Config) Load() error {
 func (c *Config) Save() error {
 	data, err := json.MarshalIndent(c, "", " ")
 	if err != nil {
-		return err
+		log.Println("Error saving config: ", err)
+	} else {
+		log.Println("Config saved successfully")
 	}
 
 	return os.WriteFile(CONFIG_PATH, data, 0644)

@@ -1,13 +1,15 @@
 package server
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/olahol/melody"
+	"github.com/otie173/odncore/core/game/world"
 	"github.com/otie173/odncore/utils/logger"
 )
 
-func (s *Server) Start() error {
+func (s *Server) Start() {
 	http.HandleFunc("GET /", func(res http.ResponseWriter, req *http.Request) {
 		s.Websocket.HandleRequest(res, req)
 	})
@@ -21,6 +23,14 @@ func (s *Server) Start() error {
 		}
 		s.PlayersConnected++
 		logger.PlayerConnected(session.Request.RemoteAddr)
+
+		if world.IsWorldWaiting {
+			if s.PlayersConnected == 1 {
+				log.Println("Wait a world from client side")
+			} else if s.PlayersConnected > 1 {
+				session.Write([]byte("Hi! Wait a bit, world is generate"))
+			}
+		}
 	})
 
 	s.Websocket.HandleDisconnect(func(session *melody.Session) {
@@ -32,11 +42,12 @@ func (s *Server) Start() error {
 	})
 
 	logger.StartServer(s.Addr)
-	return http.ListenAndServe(s.Addr, nil)
+	if err := http.ListenAndServe(s.Addr, nil); err != nil {
+		log.Fatal("Failed to start server: ", err)
+	}
 }
 
-func (s *Server) Stop() error {
+func (s *Server) Stop() {
 	s.Websocket.Close()
 	logger.StopServer()
-	return nil
 }

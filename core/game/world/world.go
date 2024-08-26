@@ -13,16 +13,18 @@ type Block struct {
 	passable bool
 }
 
-type ServerTexture byte
+type ServerTexture int
 
 var (
-	world map[Rectangle]Block
-	id    map[ServerTexture]byte
+	world          map[Rectangle]Block
+	id             map[int]ServerTexture
+	IsWorldWaiting bool
 )
 
 const (
-	WORLD_SIZE int  = 320
-	MAX_ID     byte = 127
+	TILE_SIZE  float32 = 10.0
+	WORLD_SIZE int     = 320
+	MAX_ID     byte    = 127
 )
 
 const (
@@ -87,8 +89,16 @@ const (
 
 func init() {
 	world = make(map[Rectangle]Block, WORLD_SIZE*WORLD_SIZE)
-	id = make(map[ServerTexture]byte, MAX_ID)
-	for i := byte(WALL); i <= byte(SEED2BIG); i++ {
-		id[ServerTexture(i)] = i
+	id = make(map[int]ServerTexture, MAX_ID)
+	for i := WALL; i <= SEED2BIG; i++ {
+		id[i] = ServerTexture(i)
+	}
+
+	if worldExists() {
+		// TODO: отдавать клиенту этот мир при подключении к серверу
+		//loadWorldFile()
+	} else {
+		// TODO: ждать пока клиент сгенерирует у себя мир и отошлет этот мир на сервер (тут наверное надо менять счетчик isWorldWaiting, который будет давать понять другим клиентам, что первый подключившийся клиент не сгенерировал мир и им нужно чуть повисеть в очереди)
+		IsWorldWaiting = true
 	}
 }
