@@ -17,6 +17,9 @@ func run(cfg config.Config) {
 	server := server.New(cfg.Address, cfg.MaxPlayers)
 	server.SetupReadHandler()
 	api.SetupRoutes(server)
+	if world.WorldExists() {
+		world.Load()
+	}
 
 	go func() {
 		server.Start()

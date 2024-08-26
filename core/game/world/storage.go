@@ -10,7 +10,7 @@ const (
 	BLOCK_MASK = (1 << BLOCK_BITS) - 1
 )
 
-func worldExists() bool {
+func WorldExists() bool {
 	_, err := os.Stat("world.odn")
 	return !os.IsNotExist(err)
 }
@@ -38,7 +38,7 @@ func Save() {
 				if textureID >= (1 << BLOCK_BITS) {
 					textureID = 0
 				}
-				blocks[index] = textureID + 1
+				blocks[index] = textureID
 			} else {
 				blocks[index] = 0
 			}
@@ -60,15 +60,18 @@ func Save() {
 	err := os.WriteFile("world.odn", data, 0644)
 	if err != nil {
 		log.Fatalf("Failed to save world: %v", err)
+	} else {
+		log.Println("World saved successfully")
 	}
 }
 
-func Load() map[Rectangle]Block {
+func Load() {
 	data, err := os.ReadFile("world.odn")
 	if err != nil {
 		log.Printf("Failed to load world: %v", err)
-		return make(map[Rectangle]Block)
+		return
 	}
+	log.Println("World loaded successfully")
 
 	blocks := make([]byte, (WORLD_SIZE+1)*(WORLD_SIZE+1))
 	for i := range blocks {
@@ -84,12 +87,12 @@ func Load() map[Rectangle]Block {
 		}
 	}
 
-	world := make(map[Rectangle]Block)
+	loadedWorld := make(map[Rectangle]Block, WORLD_SIZE*WORLD_SIZE)
 	index := 0
 	for y := -WORLD_SIZE / 2; y <= WORLD_SIZE/2; y++ {
 		for x := -WORLD_SIZE / 2; x <= WORLD_SIZE/2; x++ {
-			textureID := blocks[index] - 1 // Вычитаем 1, чтобы вернуться к оригинальному ID
-			if textureID > 0 {             // Загружаем только непустые блоки
+			textureID := blocks[index]
+			if textureID > 0 { // Загружаем только непустые блоки
 				rect := Rectangle{
 					X:      float32(x) * TILE_SIZE,
 					Y:      float32(y) * TILE_SIZE,
@@ -106,11 +109,11 @@ func Load() map[Rectangle]Block {
 					}
 				}
 
-				world[rect] = Block{img: textureID, rec: rect, passable: passable}
+				loadedWorld[rect] = Block{img: textureID, rec: rect, passable: passable}
 			}
 			index++
 		}
 	}
 
-	return world
+	world = loadedWorld
 }

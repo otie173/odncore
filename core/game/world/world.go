@@ -94,7 +94,7 @@ func init() {
 		id[i] = ServerTexture(i)
 	}
 
-	if worldExists() {
+	if WorldExists() {
 		// TODO: отдавать клиенту этот мир при подключении к серверу
 		//loadWorldFile()
 	} else {
