@@ -7,6 +7,7 @@ import (
 	"syscall"
 
 	"github.com/otie173/odncore/api"
+	"github.com/otie173/odncore/core/game/world"
 	"github.com/otie173/odncore/core/server"
 	"github.com/otie173/odncore/utils/config"
 	"github.com/otie173/odncore/utils/logger"
@@ -31,6 +32,7 @@ func run(cfg config.Config) {
 	server.Stop()
 
 	cfg.Save()
+	world.Save()
 }
 
 func main() {
