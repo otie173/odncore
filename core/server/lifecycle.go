@@ -27,6 +27,7 @@ func (s *Server) Start() {
 		if world.IsWorldWaiting {
 			if s.PlayersConnected == 1 {
 				log.Println("Wait a world from client side")
+				s.SendRequest(session, SEND_WORLD)
 			} else if s.PlayersConnected > 1 {
 				session.Write([]byte("Hi! Wait a bit, world is generate"))
 			}

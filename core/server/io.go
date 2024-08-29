@@ -16,6 +16,25 @@ func (s *Server) SetupReadHandler() {
 			world.IsWorldWaiting = false
 		}
 	})
+
+	s.Websocket.HandleMessageBinary(func(s *melody.Session, b []byte) {
+		if world.IsWorldWaiting {
+			log.Println("World was received")
+			world.IsWorldWaiting = false
+
+			if err := world.ByteToFile(b); err != nil {
+				log.Println("Error: ", err)
+			}
+		}
+	})
+}
+
+func (s *Server) SendRequest(session *melody.Session, opcode byte) error {
+	if err := session.WriteBinary([]byte{opcode}); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s *Server) SendToClients(sender *melody.Session, msg []byte) error {

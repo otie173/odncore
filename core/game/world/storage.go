@@ -117,3 +117,13 @@ func Load() {
 
 	world = loadedWorld
 }
+
+func ByteToFile(data []byte) error {
+	err := os.WriteFile("world.odn", data, 0644)
+	if err != nil {
+		return err
+	}
+
+	log.Println("World was saved")
+	return nil
+}

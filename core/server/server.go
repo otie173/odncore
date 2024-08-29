@@ -4,6 +4,11 @@ import (
 	"github.com/olahol/melody"
 )
 
+// Opcodes for requests to client
+const (
+	SEND_WORLD byte = iota
+)
+
 type ServerInfo struct {
 	Address          string `json:"addres"`
 	PlayersConnected int    `json:"players_connected"`
@@ -18,8 +23,11 @@ type Server struct {
 }
 
 func New(addr string, maxPlayers int) *Server {
+	m := melody.New()
+	m.Config.MaxMessageSize = 102400
+
 	return &Server{
-		Websocket:  melody.New(),
+		Websocket:  m,
 		Addr:       addr,
 		MaxPlayers: maxPlayers,
 	}
