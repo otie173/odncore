@@ -7,6 +7,7 @@ import (
 // Opcodes for requests to client
 const (
 	SEND_WORLD byte = iota
+	RECEIVE_WORLD
 )
 
 type ServerInfo struct {

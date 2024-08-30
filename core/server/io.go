@@ -2,6 +2,7 @@ package server
 
 import (
 	"log"
+	"os"
 
 	"github.com/olahol/melody"
 	"github.com/otie173/odncore/core/game/world"
@@ -10,11 +11,6 @@ import (
 func (s *Server) SetupReadHandler() {
 	s.Websocket.HandleMessage(func(session *melody.Session, msg []byte) {
 		log.Println("Received message from", session.Request.RemoteAddr, ":", string(msg))
-
-		if string(msg) == "world" && world.IsWorldWaiting {
-			log.Println("World was received")
-			world.IsWorldWaiting = false
-		}
 	})
 
 	s.Websocket.HandleMessageBinary(func(s *melody.Session, b []byte) {
@@ -29,8 +25,23 @@ func (s *Server) SetupReadHandler() {
 	})
 }
 
-func (s *Server) SendRequest(session *melody.Session, opcode byte) error {
-	if err := session.WriteBinary([]byte{opcode}); err != nil {
+func (s *Server) ReceiveWorld(session *melody.Session) error {
+	if err := session.WriteBinary([]byte{SEND_WORLD}); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *Server) SendWorld(session *melody.Session) error {
+	worldData, err := os.ReadFile("world.odn")
+	if err != nil {
+		return err
+	}
+
+	data := append([]byte{RECEIVE_WORLD}, worldData...)
+
+	if err = session.WriteBinary(data); err != nil {
 		return err
 	}
 
