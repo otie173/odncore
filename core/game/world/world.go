@@ -87,7 +87,7 @@ const (
 	SEED2BIG
 )
 
-func init() {
+func InitWorld() {
 	world = make(map[Rectangle]Block, WORLD_SIZE*WORLD_SIZE)
 	id = make(map[int]ServerTexture, MAX_ID)
 	for i := WALL; i <= SEED2BIG; i++ {

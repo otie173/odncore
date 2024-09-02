@@ -7,11 +7,17 @@ import (
 	"syscall"
 
 	"github.com/otie173/odncore/api"
+	"github.com/otie173/odncore/core/game/player"
 	"github.com/otie173/odncore/core/game/world"
 	"github.com/otie173/odncore/core/server"
 	"github.com/otie173/odncore/utils/config"
 	"github.com/otie173/odncore/utils/logger"
 )
+
+func init() {
+	world.InitWorld()
+	player.InitPlayer()
+}
 
 func run(cfg config.Config) {
 	server := server.New(cfg.Address, cfg.MaxPlayers)
