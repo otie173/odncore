@@ -41,7 +41,9 @@ func run(cfg config.Config) {
 	server.Stop()
 
 	cfg.Save()
-	world.Save()
+	if !world.IsWorldWaiting {
+		world.Save()
+	}
 }
 
 func main() {
