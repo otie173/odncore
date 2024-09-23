@@ -4,6 +4,10 @@ import (
 	"github.com/olahol/melody"
 )
 
+const (
+	MAX_BUFFER_SIZE int64 = 102400
+)
+
 // Opcodes for requests to client
 const (
 	SEND_WORLD byte = iota
@@ -25,7 +29,7 @@ type Server struct {
 
 func New(addr string, maxPlayers int) *Server {
 	m := melody.New()
-	m.Config.MaxMessageSize = 102400
+	m.Config.MaxMessageSize = MAX_BUFFER_SIZE
 
 	return &Server{
 		Websocket:  m,
