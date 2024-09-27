@@ -19,8 +19,6 @@ func InitPlayer() {
 			err := os.Mkdir(path, 0755)
 			if err != nil {
 				log.Println("Error creating directory: ", err)
-			} else {
-				log.Printf("%s directory created successfully\n", path)
 			}
 		}
 	}

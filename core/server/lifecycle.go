@@ -9,50 +9,49 @@ import (
 	"github.com/otie173/odncore/utils/logger"
 )
 
-func (s *Server) Start() {
+func Start() {
 	http.HandleFunc("GET /", func(res http.ResponseWriter, req *http.Request) {
-		s.Websocket.HandleRequest(res, req)
+		websocket.HandleRequest(res, req)
 	})
 
-	s.Websocket.HandleConnect(func(session *melody.Session) {
-		if s.PlayersConnected >= s.MaxPlayers {
-			session.Write([]byte("Sorry! Server is full"))
+	websocket.HandleConnect(func(session *melody.Session) {
+		if playersConnected >= maxPlayers {
+			//session.Write([]byte("Sorry! Server is full"))
 			session.Set("rejected", true)
 			session.Close()
 			return
 		}
-		s.PlayersConnected++
+		playersConnected++
 		logger.PlayerConnected(session.Request.RemoteAddr)
 
 		if world.IsWorldWaiting {
-			if s.PlayersConnected == 1 {
-				log.Println("Wait a world from client side")
-				if err := s.ReceiveWorld(session); err != nil {
-					log.Println("Fail with receive world from client: ", err)
+			if playersConnected == 1 {
+				if err := ReceiveWorld(session); err != nil {
+					log.Fatal("Fail with receive world from client: ", err)
 				}
 			}
 		} else {
-			if err := s.SendWorld(session); err != nil {
-				log.Println("Fail with send world to client: ", err)
+			if err := SendWorld(session); err != nil {
+				log.Fatal("Fail with send world to client: ", err)
 			}
 		}
 	})
 
-	s.Websocket.HandleDisconnect(func(session *melody.Session) {
+	websocket.HandleDisconnect(func(session *melody.Session) {
 		rejected, _ := session.Get("rejected")
-		if rejected == nil && s.PlayersConnected > 0 {
-			s.PlayersConnected--
+		if rejected == nil && playersConnected > 0 {
+			playersConnected--
 			logger.PlayerDisconnected(session.Request.RemoteAddr)
 		}
 	})
 
-	logger.StartServer(s.Addr)
-	if err := http.ListenAndServe(s.Addr, nil); err != nil {
+	logger.StartServer(addr)
+	if err := http.ListenAndServe(addr, nil); err != nil {
 		log.Fatal("Failed to start server: ", err)
 	}
 }
 
-func (s *Server) Stop() {
-	s.Websocket.Close()
+func Stop() {
+	websocket.Close()
 	logger.StopServer()
 }

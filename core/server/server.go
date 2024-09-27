@@ -4,6 +4,13 @@ import (
 	"github.com/olahol/melody"
 )
 
+var (
+	websocket        *melody.Melody
+	addr             string
+	playersConnected int
+	maxPlayers       int
+)
+
 const (
 	MAX_BUFFER_SIZE int64 = 102400
 )
@@ -20,20 +27,11 @@ type ServerInfo struct {
 	MaxPlayers       int    `json:"max_players"`
 }
 
-type Server struct {
-	Websocket        *melody.Melody
-	Addr             string
-	PlayersConnected int
-	MaxPlayers       int
-}
-
-func New(addr string, maxPlayers int) *Server {
+func New(address string, maxPlayersCount int) {
 	m := melody.New()
 	m.Config.MaxMessageSize = MAX_BUFFER_SIZE
 
-	return &Server{
-		Websocket:  m,
-		Addr:       addr,
-		MaxPlayers: maxPlayers,
-	}
+	websocket = m
+	addr = address
+	maxPlayers = maxPlayersCount
 }

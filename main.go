@@ -11,18 +11,30 @@ import (
 	"github.com/otie173/odncore/core/game/world"
 	"github.com/otie173/odncore/core/server"
 	"github.com/otie173/odncore/utils/config"
+	"github.com/otie173/odncore/utils/database"
 	"github.com/otie173/odncore/utils/logger"
 )
 
 func init() {
+	// Init server things
+	logger.Register()
+
+	config.NewConfig()
+	config.Load()
+
+	if err := database.NewDatabase(); err != nil {
+		log.Fatalf("Error: %v", err)
+	}
+
+	// Init game things
 	world.InitWorld()
 	player.InitPlayer()
 }
 
-func run(cfg config.Config) {
-	server := server.New(cfg.Address, cfg.MaxPlayers)
+func run() {
+	server.New(config.Cfg.Address, config.Cfg.MaxPlayers)
 	server.SetupReadHandler()
-	api.SetupRoutes(server)
+	api.SetupRoutes()
 	if world.WorldExists() {
 		world.Load()
 	}
@@ -32,7 +44,7 @@ func run(cfg config.Config) {
 	}()
 	log.Println("Server is running. Press CTRL+C to stop.")
 
-	// Graceful shutdownc
+	// Graceful shutdown
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)
 	<-signalChan
@@ -40,17 +52,13 @@ func run(cfg config.Config) {
 	log.Println("Shutting down server")
 	server.Stop()
 
-	cfg.Save()
+	config.Save()
+	database.Save()
 	if !world.IsWorldWaiting {
 		world.Save()
 	}
 }
 
 func main() {
-	logger.Register()
-
-	cfg := config.NewConfig()
-	cfg.Load()
-
-	run(*cfg)
+	run()
 }

@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	cfg *Config
+	Cfg Config
 )
 
 const CONFIG_PATH string = "config.json"
@@ -17,16 +17,16 @@ type Config struct {
 	MaxPlayers int    `json:"max_player"`
 }
 
-func NewConfig() *Config {
-	return &Config{
+func NewConfig() {
+	Cfg = Config{
 		Address:    "0.0.0.0:8080",
 		MaxPlayers: 16,
 	}
 }
 
-func (c *Config) Load() error {
+func Load() error {
 	if _, err := os.Stat(CONFIG_PATH); os.IsNotExist(err) {
-		return c.Save()
+		return Save()
 	}
 
 	file, err := os.ReadFile(CONFIG_PATH)
@@ -34,11 +34,11 @@ func (c *Config) Load() error {
 		log.Fatal("Failed to load config: ", err)
 	}
 
-	return json.Unmarshal(file, c)
+	return json.Unmarshal(file, &Cfg)
 }
 
-func (c *Config) Save() error {
-	data, err := json.MarshalIndent(c, "", " ")
+func Save() error {
+	data, err := json.MarshalIndent(Cfg, "", " ")
 	if err != nil {
 		log.Println("Error saving config: ", err)
 	} else {

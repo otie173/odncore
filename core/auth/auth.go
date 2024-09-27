@@ -1,15 +1,20 @@
 package auth
 
-import "golang.org/x/crypto/bcrypt"
+import (
+	"golang.org/x/crypto/bcrypt"
+)
+
+const (
+	HASH_COST int = 14
+)
 
 type Player struct {
-	Nickname     string `json:"nickname"`
-	PasswordHash string `json:"password_hash"`
-	Salt         string `json:"salt"`
+	Nickname string `json:"nickname"`
+	Password string `json:"password"`
 }
 
 func hashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), HASH_COST)
 	return string(bytes), err
 }
 
