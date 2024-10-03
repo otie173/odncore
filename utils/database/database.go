@@ -42,6 +42,14 @@ func AddPlayer(nickname string, password string) {
 	db.Put([]byte(nickname), []byte(password), nil)
 }
 
+func GetPasswordHash(nickname string) ([]byte, error) {
+	password, err := db.Get([]byte(nickname), nil)
+	if err != nil {
+		return nil, err
+	}
+	return password, err
+}
+
 func PlayerExists(nickname string) bool {
 	if exists, _ := db.Has([]byte(nickname), nil); exists {
 		return true

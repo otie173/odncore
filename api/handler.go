@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/otie173/odncore/core/auth"
@@ -33,11 +34,21 @@ func AuthHandler() http.HandlerFunc {
 			return
 		}
 
+		log.Println(player)
+
+		var authorizationOK bool
 		switch database.PlayerExists(player.Nickname) {
 		case false:
-			auth.RegisterPlayer(player.Nickname, player.Password)
+			authorizationOK = auth.RegisterPlayer(player.Nickname, player.Password)
 		case true:
-			auth.LoginPlayer(player.Nickname, player.Password)
+			authorizationOK = auth.LoginPlayer(player.Nickname, player.Password)
+		}
+
+		switch authorizationOK {
+		case false:
+			w.Write([]byte("FAIL"))
+		case true:
+			w.Write([]byte("OK"))
 		}
 	}
 }

@@ -19,6 +19,9 @@ const (
 const (
 	SEND_WORLD byte = iota
 	RECEIVE_WORLD
+
+	PLACE_BLOCK
+	REMOVE_BLOCK
 )
 
 type ServerInfo struct {
