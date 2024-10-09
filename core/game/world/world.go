@@ -1,5 +1,9 @@
 package world
 
+import (
+	"log"
+)
+
 type Rectangle struct {
 	X      float32
 	Y      float32
@@ -97,4 +101,25 @@ func InitWorld() {
 	if !WorldExists() {
 		IsWorldWaiting = true
 	}
+}
+
+func AddBlock(img byte, x, y float32, passable bool) {
+	block := Block{
+		img:      img,
+		rec:      Rectangle{x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE},
+		passable: passable,
+	}
+	world[block.rec] = block
+
+	log.Printf("Игрок поставил блок ID: %d на позиции X: %.0f, Y: %.0f и его поле Passable: %t\n", img, x, y, passable)
+	Save()
+
+	log.Println(x, y)
+}
+
+func RemoveBlock(x, y float32) {
+	delete(world, Rectangle{x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE})
+
+	log.Printf("Игрок удалил блок на позиции X: %.0f, Y: %.0f\n", x, y)
+	Save()
 }

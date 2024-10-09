@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/otie173/odncore/core/auth"
@@ -33,8 +32,6 @@ func AuthHandler() http.HandlerFunc {
 			http.Error(w, "Error parsing JSON: "+err.Error(), http.StatusBadRequest)
 			return
 		}
-
-		log.Println(player)
 
 		var authorizationOK bool
 		switch database.PlayerExists(player.Nickname) {

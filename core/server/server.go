@@ -20,7 +20,7 @@ const (
 	SEND_WORLD byte = iota
 	RECEIVE_WORLD
 
-	PLACE_BLOCK
+	ADD_BLOCK
 	REMOVE_BLOCK
 )
 
