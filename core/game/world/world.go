@@ -1,7 +1,9 @@
 package world
 
 import (
-	"log"
+	"os"
+
+	"github.com/otie173/odncore/utils/logger"
 )
 
 type Rectangle struct {
@@ -11,18 +13,28 @@ type Rectangle struct {
 	Height float32
 }
 
+type PixelFormat int32
+
+type Texture2D struct {
+	ID      uint32
+	Width   uint32
+	Height  uint32
+	Mipmaps int32
+	Format  PixelFormat
+}
+
 type Block struct {
-	img      byte
+	img      Texture2D
 	rec      Rectangle
 	passable bool
 }
 
-type ServerTexture int
-
 var (
 	world          map[Rectangle]Block
-	id             map[int]ServerTexture
+	id             map[int]Texture2D
 	IsWorldWaiting bool
+	IsWorldLoaded  bool
+	IsIdWaiting    bool
 )
 
 const (
@@ -93,33 +105,46 @@ const (
 
 func InitWorld() {
 	world = make(map[Rectangle]Block, WORLD_SIZE*WORLD_SIZE)
-	id = make(map[int]ServerTexture, MAX_ID)
-	for i := WALL; i <= SEED2BIG; i++ {
-		id[i] = ServerTexture(i)
+	id = make(map[int]Texture2D, MAX_ID)
+
+	dirs := []string{WORLD_DIR_PATH}
+
+	for _, path := range dirs {
+		if !dirExists(path) {
+			err := os.Mkdir(path, 0755)
+			if err != nil {
+				logger.Error("Error creating directory: ", err)
+			}
+		}
 	}
 
-	if !WorldExists() {
+	if !FileExists("world.odn") {
 		IsWorldWaiting = true
 	}
+	IsIdWaiting = true
 }
 
-func AddBlock(img byte, x, y float32, passable bool) {
+func dirExists(path string) bool {
+	_, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return err == nil
+}
+
+func AddBlock(img uint32, x, y float32, passable bool) {
 	block := Block{
-		img:      img,
+		img:      Texture2D{ID: img, Width: 10, Height: 10, Mipmaps: 1, Format: 7},
 		rec:      Rectangle{x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE},
 		passable: passable,
 	}
 	world[block.rec] = block
 
-	log.Printf("Игрок поставил блок ID: %d на позиции X: %.0f, Y: %.0f и его поле Passable: %t\n", img, x, y, passable)
-	Save()
-
-	log.Println(x, y)
+	logger.Infof("Игрок посdтавил блок ID: %d на позиции X: %.0f, Y: %.0f и его поле Passable: %t\n", img, x, y, passable)
 }
 
 func RemoveBlock(x, y float32) {
 	delete(world, Rectangle{x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE})
 
-	log.Printf("Игрок удалил блок на позиции X: %.0f, Y: %.0f\n", x, y)
-	Save()
+	logger.Infof("Игрок удалил блок на позиции X: %.0f, Y: %.0f\n", x, y)
 }

@@ -1,8 +1,7 @@
 package database
 
 import (
-	"log"
-
+	"github.com/otie173/odncore/utils/logger"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
@@ -11,7 +10,7 @@ var (
 )
 
 const (
-	PLAYER_DATA_PATH string = "./players/db"
+	PLAYER_DATA_PATH string = "./players/db/"
 )
 
 func NewDatabase() error {
@@ -32,9 +31,9 @@ func Close() error {
 
 func Save() {
 	if err := Close(); err != nil {
-		log.Println("Error saving database: ", err)
+		logger.Error("Error saving database: ", err)
 	} else {
-		log.Println("Database saved successfully")
+		logger.Error("Database saved successfully")
 	}
 }
 

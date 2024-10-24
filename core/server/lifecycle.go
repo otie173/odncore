@@ -1,7 +1,6 @@
 package server
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/olahol/melody"
@@ -16,23 +15,30 @@ func Start() {
 
 	websocket.HandleConnect(func(session *melody.Session) {
 		if playersConnected >= maxPlayers {
-			//session.Write([]byte("Sorry! Server is full"))
+			session.Write([]byte("Sorry! Server is full"))
 			session.Set("rejected", true)
 			session.Close()
 			return
 		}
 		playersConnected++
-		logger.PlayerConnected(session.Request.RemoteAddr)
+		logger.Info("Player connected: ", session.Request.RemoteAddr)
 
+		if world.IsIdWaiting {
+			if playersConnected == 1 {
+				if err := AskId(session); err != nil {
+					logger.Fatal("Fail with ask id from client: ", err)
+				}
+			}
+		}
 		if world.IsWorldWaiting {
 			if playersConnected == 1 {
-				if err := ReceiveWorld(session); err != nil {
-					log.Fatal("Fail with receive world from client: ", err)
+				if err := AskWorld(session); err != nil {
+					logger.Fatal("Fail with ask world from client: ", err)
 				}
 			}
 		} else {
 			if err := SendWorld(session); err != nil {
-				log.Fatal("Fail with send world to client: ", err)
+				logger.Fatal("Fail with send world to client: ", err)
 			}
 		}
 	})
@@ -41,17 +47,17 @@ func Start() {
 		rejected, _ := session.Get("rejected")
 		if rejected == nil && playersConnected > 0 {
 			playersConnected--
-			logger.PlayerDisconnected(session.Request.RemoteAddr)
+			logger.Info("Player disconnected: ", session.Request.RemoteAddr)
 		}
 	})
 
-	logger.StartServer(addr)
+	logger.Info("Server started on ", addr)
 	if err := http.ListenAndServe(addr, nil); err != nil {
-		log.Fatal("Failed to start server: ", err)
+		logger.Fatal("Failed to start server: ", err)
 	}
 }
 
 func Stop() {
 	websocket.Close()
-	logger.StopServer()
+	logger.Info("Server was stopped")
 }

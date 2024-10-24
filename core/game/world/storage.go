@@ -1,17 +1,21 @@
 package world
 
 import (
-	"log"
 	"os"
+
+	"github.com/otie173/odncore/utils/logger"
+	"github.com/vmihailenco/msgpack/v5"
 )
 
 const (
 	BLOCK_BITS = 7
 	BLOCK_MASK = (1 << BLOCK_BITS) - 1
+
+	WORLD_DIR_PATH string = "./world/"
 )
 
-func WorldExists() bool {
-	_, err := os.Stat("world.odn")
+func FileExists(filename string) bool {
+	_, err := os.Stat(filename)
 	return !os.IsNotExist(err)
 }
 
@@ -30,17 +34,18 @@ func Save() {
 			if block, exists := world[rect]; exists {
 				var textureID byte
 				for id, texture := range id {
-					if ServerTexture(block.img) == texture {
+					if block.img == texture {
 						textureID = byte(id)
 						break
 					}
 				}
 				if textureID >= (1 << BLOCK_BITS) {
-					textureID = 0
+					logger.Warnf("Предупреждение: ID блока %d превышает максимальное значение %d", textureID, (1<<BLOCK_BITS)-1)
+					textureID = 0 // или какое-то другое значение по умолчанию
 				}
-				blocks[index] = textureID
+				blocks[index] = textureID + 1 // Добавляем 1, чтобы 0 означало пустой блок
 			} else {
-				blocks[index] = 0
+				blocks[index] = 0 // Пустой блок
 			}
 			index++
 		}
@@ -57,21 +62,21 @@ func Save() {
 		}
 	}
 
-	err := os.WriteFile("world.odn", data, 0644)
+	err := os.WriteFile(WORLD_DIR_PATH+"world.odn", data, 0644)
 	if err != nil {
-		log.Fatalf("Failed to save world: %v", err)
+		logger.Fatal("Failed to save world:", err)
 	} else {
-		log.Println("World saved successfully")
+		logger.Info("World saved successfully")
 	}
 }
 
 func Load() {
-	data, err := os.ReadFile("world.odn")
+	data, err := os.ReadFile(WORLD_DIR_PATH + "world.odn")
 	if err != nil {
-		log.Printf("Failed to load world: %v", err)
+		logger.Error("Failed to load world: ", err)
 		return
 	}
-	log.Println("World loaded successfully")
+	logger.Info("World loaded successfully")
 
 	blocks := make([]byte, (WORLD_SIZE+1)*(WORLD_SIZE+1))
 	for i := range blocks {
@@ -87,12 +92,12 @@ func Load() {
 		}
 	}
 
-	loadedWorld := make(map[Rectangle]Block, WORLD_SIZE*WORLD_SIZE)
+	loadedWorld := make(map[Rectangle]Block)
 	index := 0
 	for y := -WORLD_SIZE / 2; y <= WORLD_SIZE/2; y++ {
 		for x := -WORLD_SIZE / 2; x <= WORLD_SIZE/2; x++ {
-			textureID := blocks[index]
-			if textureID > 0 { // Загружаем только непустые блоки
+			textureID := int(blocks[index]) - 1 // Вычитаем 1, чтобы вернуться к оригинальному ID
+			if textureID >= 0 {                 // Загружаем только непустые блоки
 				rect := Rectangle{
 					X:      float32(x) * TILE_SIZE,
 					Y:      float32(y) * TILE_SIZE,
@@ -103,27 +108,55 @@ func Load() {
 				passable := false
 				passableBlocks := []int{DOOR, GRASS1, GRASS2, GRASS3, GRASS4, GRASS5, GRASS6, FLOOR, FLOOR2, FLOOR4, DOOROPEN}
 				for _, block := range passableBlocks {
-					if textureID == byte(block) {
+					if textureID == block {
 						passable = true
 						break
 					}
 				}
-
-				loadedWorld[rect] = Block{img: textureID, rec: rect, passable: passable}
+				loadedWorld[rect] = Block{img: id[textureID], rec: rect, passable: passable}
 			}
 			index++
 		}
 	}
-
 	world = loadedWorld
 }
 
+func SaveId() {
+	data, err := msgpack.Marshal(&id)
+	if err != nil {
+		logger.Error("Error with saving id list: ", err)
+	}
+
+	os.WriteFile(WORLD_DIR_PATH+"id.odn", data, 0644)
+	logger.Info("Id list saved succesfully")
+}
+
+func LoadIdNetwork(data []byte) {
+	if err := msgpack.Unmarshal(data, &id); err != nil {
+		logger.Error("Error with loading id list from network: ", err)
+	}
+	IsIdWaiting = false
+	logger.Info("Id list loaded succesfully")
+}
+
+func LoadIdFile() {
+	data, err := os.ReadFile(WORLD_DIR_PATH + "id.odn")
+	if err != nil {
+		logger.Error("Error with loading id list from file: ", err)
+	}
+
+	if err := msgpack.Unmarshal(data, &id); err != nil {
+		logger.Error("Error with loading id list from file: ", err)
+	}
+	IsIdWaiting = false
+	logger.Info("Id list loaded succesfully")
+}
+
 func ByteToFile(data []byte) error {
-	err := os.WriteFile("world.odn", data, 0644)
+	err := os.WriteFile(WORLD_DIR_PATH+"world.odn", data, 0644)
 	if err != nil {
 		return err
 	}
-
 	Load()
 
 	return nil

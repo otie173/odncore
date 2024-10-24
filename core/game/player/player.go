@@ -1,6 +1,15 @@
 package player
 
+var (
+	players []Player
+)
+
 type Player struct {
+	nickname  string
+	inventory Inventory
+}
+
+type Inventory struct {
 	X                float32 `json:"x"`
 	Y                float32 `json:"y"`
 	Health           int     `json:"health"`
@@ -60,12 +69,4 @@ type Player struct {
 	SaplingCount     int     `json:"sapling_count"`
 	SeedCount        int     `json:"seed_count"`
 	CabaggeCount     int     `json:"cabbage_count"`
-}
-
-func Save() {
-
-}
-
-func Load() {
-
 }

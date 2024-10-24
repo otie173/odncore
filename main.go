@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -23,40 +22,47 @@ func init() {
 	config.Load()
 
 	if err := database.NewDatabase(); err != nil {
-		log.Fatalf("Error: %v", err)
+		logger.Fatal("Error: ", err)
 	}
 
 	// Init game things
 	world.InitWorld()
-	player.InitPlayer()
+	player.InitPlayer(config.Cfg)
 }
 
 func run() {
 	server.New(config.Cfg.Address, config.Cfg.MaxPlayers)
 	server.SetupReadHandler()
 	api.SetupRoutes()
-	if world.WorldExists() {
+	if world.FileExists(world.WORLD_DIR_PATH + "id.odn") {
+		world.LoadIdFile()
+	}
+	if world.FileExists(world.WORLD_DIR_PATH + "world.odn") {
 		world.Load()
 	}
 
 	go func() {
 		server.Start()
 	}()
-	log.Println("Server is running. Press CTRL+C to stop.")
+	logger.Info("Server is running. Press CTRL+C to stop.")
 
 	// Graceful shutdown
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)
 	<-signalChan
 
-	log.Println("Shutting down server")
+	logger.Info("Shutting down server")
 	server.Stop()
 
 	config.Save()
 	database.Save()
+	if !world.IsIdWaiting {
+		world.SaveId()
+	}
 	if !world.IsWorldWaiting {
 		world.Save()
 	}
+	player.InventorySave()
 }
 
 func main() {

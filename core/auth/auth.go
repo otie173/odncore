@@ -8,7 +8,7 @@ const (
 	HASH_COST int = 14
 )
 
-type Player struct {
+type PlayerAuth struct {
 	Nickname string `json:"nickname"`
 	Password string `json:"password"`
 }

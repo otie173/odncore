@@ -2,8 +2,9 @@ package config
 
 import (
 	"encoding/json"
-	"log"
 	"os"
+
+	"github.com/otie173/odncore/utils/logger"
 )
 
 var (
@@ -31,7 +32,7 @@ func Load() error {
 
 	file, err := os.ReadFile(CONFIG_PATH)
 	if err != nil {
-		log.Fatal("Failed to load config: ", err)
+		logger.Fatal("Failed to load config: ", err)
 	}
 
 	return json.Unmarshal(file, &Cfg)
@@ -40,9 +41,9 @@ func Load() error {
 func Save() error {
 	data, err := json.MarshalIndent(Cfg, "", " ")
 	if err != nil {
-		log.Println("Error saving config: ", err)
+		logger.Error("Error saving config: ", err)
 	} else {
-		log.Println("Config saved successfully")
+		logger.Info("Config saved successfully")
 	}
 
 	return os.WriteFile(CONFIG_PATH, data, 0644)

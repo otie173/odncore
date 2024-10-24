@@ -1,30 +1,56 @@
 package logger
 
 import (
-	"log"
+	"fmt"
 	"os"
+	"strings"
+
+	"log"
 )
 
 var (
-	logger *log.Logger
+	infoLogger  *log.Logger
+	warnLogger  *log.Logger
+	errorLogger *log.Logger
+	fatalLogger *log.Logger
 )
 
 func Register() {
-	logger = log.New(os.Stdout, "", log.Ldate|log.Ltime)
+
+	infoLogger = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	warnLogger = log.New(os.Stdout, "WARN\t", log.Ldate|log.Ltime)
+	errorLogger = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime)
+	fatalLogger = log.New(os.Stdout, "FATAl\t", log.Ldate|log.Ltime)
 }
 
-func StartServer(addr string) {
-	logger.Printf("Server was started on %s\n", addr)
+func Info(text ...string) {
+	infoLogger.Print(strings.Join(text, " ") + "\n")
 }
 
-func StopServer() {
-	logger.Println("Server was stopped")
+func Infof(format string, args ...any) {
+	infoLogger.Printf(format, args...)
 }
 
-func PlayerConnected(playerAddr string) {
-	logger.Printf("Player connected: %s\n", playerAddr)
+func Warn(text ...any) {
+	warnLogger.Print(fmt.Sprintln(text...))
 }
 
-func PlayerDisconnected(playerAddr string) {
-	logger.Printf("Player disconnected: %s\n", playerAddr)
+func Warnf(format string, args ...any) {
+	warnLogger.Printf(format, args...)
+}
+
+func Error(text ...any) {
+	errorLogger.Print(fmt.Sprintln(text...))
+}
+
+func Errorf(format string, args ...any) {
+	errorLogger.Printf(format, args...)
+}
+
+func Fatal(text ...any) {
+	fatalLogger.Fatal(fmt.Sprint(text...))
+}
+
+func Fatalf(format string, args ...any) {
+	fatalLogger.Fatalf(format, args...)
 }

@@ -20,6 +20,8 @@ const (
 	SEND_WORLD byte = iota
 	RECEIVE_WORLD
 
+	SEND_ID
+	RECEIVE_ID
 	ADD_BLOCK
 	REMOVE_BLOCK
 )

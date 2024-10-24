@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/otie173/odncore/core/auth"
+	"github.com/otie173/odncore/core/game/player"
 	"github.com/otie173/odncore/core/server"
 	"github.com/otie173/odncore/utils/database"
 )
@@ -25,20 +26,20 @@ func AboutHandler() http.HandlerFunc {
 
 func AuthHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var player auth.Player
+		var playerAuth auth.PlayerAuth
 
 		decoder := json.NewDecoder(r.Body)
-		if err := decoder.Decode(&player); err != nil {
+		if err := decoder.Decode(&playerAuth); err != nil {
 			http.Error(w, "Error parsing JSON: "+err.Error(), http.StatusBadRequest)
 			return
 		}
 
 		var authorizationOK bool
-		switch database.PlayerExists(player.Nickname) {
+		switch database.PlayerExists(playerAuth.Nickname) {
 		case false:
-			authorizationOK = auth.RegisterPlayer(player.Nickname, player.Password)
+			authorizationOK = auth.RegisterPlayer(playerAuth.Nickname, playerAuth.Password)
 		case true:
-			authorizationOK = auth.LoginPlayer(player.Nickname, player.Password)
+			authorizationOK = auth.LoginPlayer(playerAuth.Nickname, playerAuth.Password)
 		}
 
 		switch authorizationOK {
@@ -46,6 +47,8 @@ func AuthHandler() http.HandlerFunc {
 			w.Write([]byte("FAIL"))
 		case true:
 			w.Write([]byte("OK"))
+
+			player.AddPlayer(playerAuth.Nickname)
 		}
 	}
 }
