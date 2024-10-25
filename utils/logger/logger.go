@@ -16,7 +16,6 @@ var (
 )
 
 func Register() {
-
 	infoLogger = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	warnLogger = log.New(os.Stdout, "WARN\t", log.Ldate|log.Ltime)
 	errorLogger = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime)

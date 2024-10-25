@@ -3,6 +3,7 @@ package world
 import (
 	"os"
 
+	"github.com/otie173/odncore/utils/filesystem"
 	"github.com/otie173/odncore/utils/logger"
 	"github.com/vmihailenco/msgpack/v5"
 )
@@ -10,14 +11,7 @@ import (
 const (
 	BLOCK_BITS = 7
 	BLOCK_MASK = (1 << BLOCK_BITS) - 1
-
-	WORLD_DIR_PATH string = "./world/"
 )
-
-func FileExists(filename string) bool {
-	_, err := os.Stat(filename)
-	return !os.IsNotExist(err)
-}
 
 func Save() {
 	blocks := make([]byte, (WORLD_SIZE+1)*(WORLD_SIZE+1))
@@ -62,7 +56,7 @@ func Save() {
 		}
 	}
 
-	err := os.WriteFile(WORLD_DIR_PATH+"world.odn", data, 0644)
+	err := os.WriteFile(filesystem.WORLD_DIR_PATH+"world.odn", data, 0644)
 	if err != nil {
 		logger.Fatal("Failed to save world:", err)
 	} else {
@@ -71,7 +65,7 @@ func Save() {
 }
 
 func Load() {
-	data, err := os.ReadFile(WORLD_DIR_PATH + "world.odn")
+	data, err := os.ReadFile(filesystem.WORLD_DIR_PATH + "world.odn")
 	if err != nil {
 		logger.Error("Failed to load world: ", err)
 		return
@@ -127,7 +121,7 @@ func SaveId() {
 		logger.Error("Error with saving id list: ", err)
 	}
 
-	os.WriteFile(WORLD_DIR_PATH+"id.odn", data, 0644)
+	os.WriteFile(filesystem.WORLD_DIR_PATH+"id.odn", data, 0644)
 	logger.Info("Id list saved succesfully")
 }
 
@@ -140,7 +134,7 @@ func LoadIdNetwork(data []byte) {
 }
 
 func LoadIdFile() {
-	data, err := os.ReadFile(WORLD_DIR_PATH + "id.odn")
+	data, err := os.ReadFile(filesystem.WORLD_DIR_PATH + "id.odn")
 	if err != nil {
 		logger.Error("Error with loading id list from file: ", err)
 	}
@@ -153,7 +147,7 @@ func LoadIdFile() {
 }
 
 func ByteToFile(data []byte) error {
-	err := os.WriteFile(WORLD_DIR_PATH+"world.odn", data, 0644)
+	err := os.WriteFile(filesystem.WORLD_DIR_PATH+"world.odn", data, 0644)
 	if err != nil {
 		return err
 	}

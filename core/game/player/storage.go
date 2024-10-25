@@ -4,18 +4,13 @@ import (
 	"os"
 
 	"github.com/otie173/odncore/utils/config"
+	"github.com/otie173/odncore/utils/filesystem"
 	"github.com/otie173/odncore/utils/logger"
 	"github.com/vmihailenco/msgpack/v5"
 )
 
-const (
-	PLAYERS_DIR_PATH     string = "./players/"
-	PLAYER_DATA_DIR_PATH string = "./players/data/"
-	PLAYER_DB_PATH       string = "./players/db/"
-)
-
 func InitPlayer(cfg config.Config) {
-	dirs := []string{PLAYERS_DIR_PATH, PLAYER_DATA_DIR_PATH, PLAYER_DB_PATH}
+	dirs := []string{filesystem.PLAYERS_DIR_PATH, filesystem.PLAYER_DATA_DIR_PATH, filesystem.PLAYER_DB_PATH}
 
 	for _, path := range dirs {
 		if !dirExists(path) {
@@ -47,7 +42,7 @@ func InventorySave() error {
 		return err
 	}
 
-	os.WriteFile(PLAYER_DATA_DIR_PATH+"inventory.odn", data, 0644)
+	os.WriteFile(filesystem.PLAYER_DATA_DIR_PATH+"inventory.odn", data, 0644)
 	logger.Info("Inventory saved succesfully")
 	return nil
 }

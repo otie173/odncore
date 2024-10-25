@@ -5,6 +5,7 @@ import (
 
 	"github.com/olahol/melody"
 	"github.com/otie173/odncore/core/game/world"
+	"github.com/otie173/odncore/utils/filesystem"
 	"github.com/otie173/odncore/utils/logger"
 	"github.com/vmihailenco/msgpack/v5"
 )
@@ -59,7 +60,7 @@ func ReceiveWorld(data []byte) error {
 func SendWorld(session *melody.Session) error {
 	world.Save()
 
-	worldData, err := os.ReadFile(world.WORLD_DIR_PATH + "world.odn")
+	worldData, err := os.ReadFile(filesystem.WORLD_DIR_PATH + "world.odn")
 	if err != nil {
 		return err
 	}

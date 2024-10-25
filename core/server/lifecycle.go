@@ -51,9 +51,9 @@ func Start() {
 		}
 	})
 
-	logger.Info("Server started on ", addr)
+	logger.Info("Server started on ", "address", addr)
 	if err := http.ListenAndServe(addr, nil); err != nil {
-		logger.Fatal("Failed to start server: ", err)
+		logger.Fatal("Failed to start server: ", "error", err)
 	}
 }
 

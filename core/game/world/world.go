@@ -3,6 +3,7 @@ package world
 import (
 	"os"
 
+	"github.com/otie173/odncore/utils/filesystem"
 	"github.com/otie173/odncore/utils/logger"
 )
 
@@ -107,10 +108,10 @@ func InitWorld() {
 	world = make(map[Rectangle]Block, WORLD_SIZE*WORLD_SIZE)
 	id = make(map[int]Texture2D, MAX_ID)
 
-	dirs := []string{WORLD_DIR_PATH}
+	dirs := []string{filesystem.WORLD_DIR_PATH}
 
 	for _, path := range dirs {
-		if !dirExists(path) {
+		if !filesystem.DirExists(path) {
 			err := os.Mkdir(path, 0755)
 			if err != nil {
 				logger.Error("Error creating directory: ", err)
@@ -118,18 +119,10 @@ func InitWorld() {
 		}
 	}
 
-	if !FileExists("world.odn") {
+	if !filesystem.FileExists("world.odn") {
 		IsWorldWaiting = true
 	}
 	IsIdWaiting = true
-}
-
-func dirExists(path string) bool {
-	_, err := os.Stat(path)
-	if os.IsNotExist(err) {
-		return false
-	}
-	return err == nil
 }
 
 func AddBlock(img uint32, x, y float32, passable bool) {

@@ -11,6 +11,7 @@ import (
 	"github.com/otie173/odncore/core/server"
 	"github.com/otie173/odncore/utils/config"
 	"github.com/otie173/odncore/utils/database"
+	"github.com/otie173/odncore/utils/filesystem"
 	"github.com/otie173/odncore/utils/logger"
 )
 
@@ -34,10 +35,10 @@ func run() {
 	server.New(config.Cfg.Address, config.Cfg.MaxPlayers)
 	server.SetupReadHandler()
 	api.SetupRoutes()
-	if world.FileExists(world.WORLD_DIR_PATH + "id.odn") {
+	if filesystem.FileExists(filesystem.WORLD_DIR_PATH + "id.odn") {
 		world.LoadIdFile()
 	}
-	if world.FileExists(world.WORLD_DIR_PATH + "world.odn") {
+	if filesystem.FileExists(filesystem.WORLD_DIR_PATH + "world.odn") {
 		world.Load()
 	}
 
