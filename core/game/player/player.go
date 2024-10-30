@@ -1,7 +1,7 @@
 package player
 
 var (
-	players []Player
+	players map[string]Player
 )
 
 type Player struct {

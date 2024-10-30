@@ -1,6 +1,7 @@
 package world
 
 import (
+	"log"
 	"os"
 
 	"github.com/otie173/odncore/utils/filesystem"
@@ -58,19 +59,16 @@ func Save() {
 
 	err := os.WriteFile(filesystem.WORLD_DIR_PATH+"world.odn", data, 0644)
 	if err != nil {
-		logger.Fatal("Failed to save world:", err)
-	} else {
-		logger.Info("World saved successfully")
+		logger.Fatalf("Не удалось сохранить мир: %v", err)
 	}
+	logger.Info("Мир успешно сохранен")
 }
 
 func Load() {
 	data, err := os.ReadFile(filesystem.WORLD_DIR_PATH + "world.odn")
 	if err != nil {
-		logger.Error("Failed to load world: ", err)
-		return
+		log.Printf("Ошибка при чтении файла: %v", err)
 	}
-	logger.Info("World loaded successfully")
 
 	blocks := make([]byte, (WORLD_SIZE+1)*(WORLD_SIZE+1))
 	for i := range blocks {
@@ -113,6 +111,8 @@ func Load() {
 		}
 	}
 	world = loadedWorld
+	IsWorldLoaded = true
+	IsWorldWaiting = false
 }
 
 func SaveId() {

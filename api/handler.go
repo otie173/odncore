@@ -48,7 +48,7 @@ func AuthHandler() http.HandlerFunc {
 		case true:
 			w.Write([]byte("OK"))
 
-			player.AddPlayer(playerAuth.Nickname)
+			player.AddPlayer(r.RemoteAddr, playerAuth.Nickname)
 		}
 	}
 }

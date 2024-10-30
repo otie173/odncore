@@ -10,6 +10,14 @@ import (
 	"github.com/vmihailenco/msgpack/v5"
 )
 
+type BlockPacket struct {
+	Action   byte
+	Texture  uint32
+	X        float32
+	Y        float32
+	Passable bool
+}
+
 type Request struct {
 	Name     string
 	Action   byte
@@ -23,14 +31,19 @@ func handleRequest(opcode byte, data []byte) {
 	switch opcode {
 	case RECEIVE_WORLD:
 		ReceiveWorld(data)
-	case ADD_BLOCK:
-		var reqData Request
-		if err := msgpack.Unmarshal(data, &reqData); err != nil {
+	case BLOCK_PACKET:
+		var blockPacket BlockPacket
+		if err := msgpack.Unmarshal(data, &blockPacket); err != nil {
 			logger.Error("Error unmarshalling data:", err)
 		}
-		world.AddBlock(reqData.Texture, reqData.X, reqData.Y, reqData.Passable)
-	case REMOVE_BLOCK:
-		world.RemoveBlock(float32(data[1]), float32(data[2]))
+
+		switch blockPacket.Action {
+		case ADD_BLOCK:
+			world.AddBlock(blockPacket.Texture, blockPacket.X, blockPacket.Y, blockPacket.Passable)
+		case REMOVE_BLOCK:
+			world.RemoveBlock(blockPacket.X, blockPacket.Y)
+		}
+
 	case RECEIVE_ID:
 		world.LoadIdNetwork(data)
 	}

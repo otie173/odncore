@@ -127,13 +127,13 @@ func InitWorld() {
 
 func AddBlock(img uint32, x, y float32, passable bool) {
 	block := Block{
-		img:      Texture2D{ID: img, Width: 10, Height: 10, Mipmaps: 1, Format: 7},
+		img:      Texture2D{ID: img, Width: uint32(TILE_SIZE), Height: uint32(TILE_SIZE), Mipmaps: 1, Format: 7},
 		rec:      Rectangle{x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE},
 		passable: passable,
 	}
 	world[block.rec] = block
 
-	logger.Infof("Игрок посdтавил блок ID: %d на позиции X: %.0f, Y: %.0f и его поле Passable: %t\n", img, x, y, passable)
+	logger.Infof("Игрок поставил блок ID: %d на позиции X: %.0f, Y: %.0f и его поле Passable: %t\n", img, x, y, passable)
 }
 
 func RemoveBlock(x, y float32) {

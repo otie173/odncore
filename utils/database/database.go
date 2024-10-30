@@ -33,7 +33,7 @@ func Save() {
 	if err := Close(); err != nil {
 		logger.Error("Error saving database: ", err)
 	} else {
-		logger.Error("Database saved successfully")
+		logger.Info("Database saved successfully")
 	}
 }
 

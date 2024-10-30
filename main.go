@@ -16,7 +16,6 @@ import (
 )
 
 func init() {
-	// Init server things
 	logger.Register()
 
 	config.NewConfig()
@@ -26,7 +25,6 @@ func init() {
 		logger.Fatal("Error: ", err)
 	}
 
-	// Init game things
 	world.InitWorld()
 	player.InitPlayer(config.Cfg)
 }
@@ -47,7 +45,6 @@ func run() {
 	}()
 	logger.Info("Server is running. Press CTRL+C to stop.")
 
-	// Graceful shutdown
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)
 	<-signalChan
@@ -63,7 +60,7 @@ func run() {
 	if !world.IsWorldWaiting {
 		world.Save()
 	}
-	player.InventorySave()
+	//player.Save("lol")
 }
 
 func main() {

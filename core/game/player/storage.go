@@ -1,6 +1,7 @@
 package player
 
 import (
+	"log"
 	"os"
 
 	"github.com/otie173/odncore/utils/config"
@@ -13,7 +14,7 @@ func InitPlayer(cfg config.Config) {
 	dirs := []string{filesystem.PLAYERS_DIR_PATH, filesystem.PLAYER_DATA_DIR_PATH, filesystem.PLAYER_DB_PATH}
 
 	for _, path := range dirs {
-		if !dirExists(path) {
+		if !filesystem.DirExists(path) {
 			err := os.Mkdir(path, 0755)
 			if err != nil {
 				logger.Error("Error creating directory: ", err)
@@ -21,22 +22,28 @@ func InitPlayer(cfg config.Config) {
 		}
 	}
 
-	players = make([]Player, cfg.MaxPlayers)
+	players = make(map[string]Player, cfg.MaxPlayers)
 }
 
-func dirExists(path string) bool {
-	_, err := os.Stat(path)
-	if os.IsNotExist(err) {
-		return false
+func GetName(addr string) string {
+	log.Println(addr)
+	log.Println(players)
+
+	if player, ok := players[addr]; ok {
+		log.Println("Player found:", player)
+		log.Println("Nickname:", player.nickname)
+	} else {
+		log.Println("Player not found for address:", addr)
 	}
-	return err == nil
+
+	return players[addr].nickname
 }
 
-func AddPlayer(nickname string) {
-	players = append(players, Player{nickname: nickname, inventory: Inventory{}})
+func AddPlayer(addr string, nickname string) {
+	players[addr] = Player{nickname: nickname, inventory: Inventory{}}
 }
 
-func InventorySave() error {
+func Save(nickname string) error {
 	data, err := msgpack.Marshal(players)
 	if err != nil {
 		return err
@@ -47,6 +54,6 @@ func InventorySave() error {
 	return nil
 }
 
-func InventoryLoad() {
+func Load(nickname string) {
 
 }
