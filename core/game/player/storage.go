@@ -43,13 +43,13 @@ func AddPlayer(addr string, nickname string) {
 	players[addr] = Player{nickname: nickname, inventory: Inventory{}}
 }
 
-func Save(nickname string) error {
-	data, err := msgpack.Marshal(players)
+func Save(addr string) error {
+	data, err := msgpack.Marshal(players[addr])
 	if err != nil {
 		return err
 	}
 
-	os.WriteFile(filesystem.PLAYER_DATA_DIR_PATH+"inventory.odn", data, 0644)
+	os.WriteFile(filesystem.PLAYER_DATA_DIR_PATH+players[addr].nickname+".odn", data, 0644)
 	logger.Info("Inventory saved succesfully")
 	return nil
 }

@@ -60,7 +60,6 @@ func run() {
 	if !world.IsWorldWaiting {
 		world.Save()
 	}
-	//player.Save("lol")
 }
 
 func main() {

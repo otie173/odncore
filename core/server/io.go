@@ -7,6 +7,7 @@ import (
 	"github.com/otie173/odncore/core/game/world"
 	"github.com/otie173/odncore/utils/filesystem"
 	"github.com/otie173/odncore/utils/logger"
+	"github.com/otie173/odncore/utils/typeconv"
 	"github.com/vmihailenco/msgpack/v5"
 )
 
@@ -32,18 +33,25 @@ func handleRequest(opcode byte, data []byte) {
 	case RECEIVE_WORLD:
 		ReceiveWorld(data)
 	case BLOCK_PACKET:
-		var blockPacket BlockPacket
-		if err := msgpack.Unmarshal(data, &blockPacket); err != nil {
+		var packet map[string]interface{}
+		if err := msgpack.Unmarshal(data, &packet); err != nil {
 			logger.Error("Error unmarshalling data:", err)
 		}
 
-		switch blockPacket.Action {
+		switch typeconv.GetByte(packet["Action"]) {
 		case ADD_BLOCK:
-			world.AddBlock(blockPacket.Texture, blockPacket.X, blockPacket.Y, blockPacket.Passable)
+			world.AddBlock(
+				typeconv.GetUint32(packet["Texture"]),
+				typeconv.GetFloat32(packet["X"]),
+				typeconv.GetFloat32(packet["Y"]),
+				typeconv.GetBool(packet["Passable"]),
+			)
 		case REMOVE_BLOCK:
-			world.RemoveBlock(blockPacket.X, blockPacket.Y)
+			world.RemoveBlock(
+				typeconv.GetFloat32(packet["X"]),
+				typeconv.GetFloat32(packet["Y"]),
+			)
 		}
-
 	case RECEIVE_ID:
 		world.LoadIdNetwork(data)
 	}
