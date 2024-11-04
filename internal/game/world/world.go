@@ -3,8 +3,8 @@ package world
 import (
 	"os"
 
-	"github.com/otie173/odncore/utils/filesystem"
-	"github.com/otie173/odncore/utils/logger"
+	"github.com/otie173/odncore/internal/filesystem"
+	"github.com/otie173/odncore/internal/logger"
 )
 
 type Rectangle struct {

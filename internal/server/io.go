@@ -4,10 +4,10 @@ import (
 	"os"
 
 	"github.com/olahol/melody"
-	"github.com/otie173/odncore/core/game/world"
-	"github.com/otie173/odncore/utils/filesystem"
-	"github.com/otie173/odncore/utils/logger"
-	"github.com/otie173/odncore/utils/typeconv"
+	"github.com/otie173/odncore/internal/filesystem"
+	"github.com/otie173/odncore/internal/game/world"
+	"github.com/otie173/odncore/internal/logger"
+	"github.com/otie173/odncore/internal/typeconv"
 	"github.com/vmihailenco/msgpack/v5"
 )
 

@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/olahol/melody"
-	"github.com/otie173/odncore/core/game/world"
-	"github.com/otie173/odncore/utils/logger"
+	"github.com/otie173/odncore/internal/game/world"
+	"github.com/otie173/odncore/internal/logger"
 )
 
 func Start() {

@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/otie173/odncore/core/auth"
-	"github.com/otie173/odncore/core/game/player"
-	"github.com/otie173/odncore/core/server"
-	"github.com/otie173/odncore/utils/database"
+	"github.com/otie173/odncore/internal/auth"
+	"github.com/otie173/odncore/internal/database"
+	"github.com/otie173/odncore/internal/game/player"
+	"github.com/otie173/odncore/internal/server"
 )
 
 func respondJSON(w http.ResponseWriter, data interface{}) {

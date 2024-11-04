@@ -1,8 +1,8 @@
 package auth
 
 import (
-	"github.com/otie173/odncore/utils/database"
-	"github.com/otie173/odncore/utils/logger"
+	"github.com/otie173/odncore/internal/database"
+	"github.com/otie173/odncore/internal/logger"
 )
 
 func LoginPlayer(nickname, password string) bool {

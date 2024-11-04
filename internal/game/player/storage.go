@@ -4,9 +4,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/otie173/odncore/utils/config"
-	"github.com/otie173/odncore/utils/filesystem"
-	"github.com/otie173/odncore/utils/logger"
+	"github.com/otie173/odncore/internal/config"
+	"github.com/otie173/odncore/internal/filesystem"
+	"github.com/otie173/odncore/internal/logger"
 	"github.com/vmihailenco/msgpack/v5"
 )
 

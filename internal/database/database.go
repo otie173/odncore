@@ -1,7 +1,7 @@
 package database
 
 import (
-	"github.com/otie173/odncore/utils/logger"
+	"github.com/otie173/odncore/internal/logger"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
