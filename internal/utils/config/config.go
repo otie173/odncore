@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/otie173/odncore/internal/logger"
+	"github.com/otie173/odncore/internal/utils/logger"
 )
 
 var (

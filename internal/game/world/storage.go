@@ -4,8 +4,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/otie173/odncore/internal/filesystem"
-	"github.com/otie173/odncore/internal/logger"
+	"github.com/otie173/odncore/internal/utils/filesystem"
+	"github.com/otie173/odncore/internal/utils/logger"
 	"github.com/vmihailenco/msgpack/v5"
 )
 

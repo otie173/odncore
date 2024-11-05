@@ -5,7 +5,7 @@ import (
 
 	"github.com/olahol/melody"
 	"github.com/otie173/odncore/internal/game/world"
-	"github.com/otie173/odncore/internal/logger"
+	"github.com/otie173/odncore/internal/utils/logger"
 )
 
 func Start() {
