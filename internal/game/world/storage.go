@@ -111,7 +111,6 @@ func Load() {
 		}
 	}
 	world = loadedWorld
-	IsWorldLoaded = true
 	IsWorldWaiting = false
 }
 

@@ -32,8 +32,10 @@ const (
 	LOAD_PLAYER_DATA
 )
 
-type ServerInfo struct {
-	Address          string `json:"addres"`
+type ServerStatus struct {
+	Address          string `json:"address"`
+	IdWaiting        bool   `json:"id_waiting"`
+	WorldWaiting     bool   `json:"world_waiting"`
 	PlayersConnected int    `json:"players_connected"`
 	MaxPlayers       int    `json:"max_players"`
 }

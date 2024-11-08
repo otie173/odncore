@@ -34,8 +34,8 @@ var (
 	world          map[Rectangle]Block
 	id             map[int]Texture2D
 	IsWorldWaiting bool
-	IsWorldLoaded  bool
-	IsIdWaiting    bool
+
+	IsIdWaiting bool
 )
 
 const (

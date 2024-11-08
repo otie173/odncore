@@ -11,23 +11,6 @@ import (
 	"github.com/vmihailenco/msgpack/v5"
 )
 
-type BlockPacket struct {
-	Action   byte
-	Texture  uint32
-	X        float32
-	Y        float32
-	Passable bool
-}
-
-type Request struct {
-	Name     string
-	Action   byte
-	Texture  uint32
-	X        float32
-	Y        float32
-	Passable bool
-}
-
 func handleRequest(opcode byte, data []byte) {
 	switch opcode {
 	case RECEIVE_WORLD:

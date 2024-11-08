@@ -6,13 +6,13 @@ import (
 	"syscall"
 
 	"github.com/otie173/odncore/api"
-	"github.com/otie173/odncore/internal/config"
-	"github.com/otie173/odncore/internal/database"
-	"github.com/otie173/odncore/internal/filesystem"
 	"github.com/otie173/odncore/internal/game/player"
 	"github.com/otie173/odncore/internal/game/world"
-	"github.com/otie173/odncore/internal/logger"
 	"github.com/otie173/odncore/internal/server"
+	"github.com/otie173/odncore/internal/utils/config"
+	"github.com/otie173/odncore/internal/utils/database"
+	"github.com/otie173/odncore/internal/utils/filesystem"
+	"github.com/otie173/odncore/internal/utils/logger"
 )
 
 func init() {
