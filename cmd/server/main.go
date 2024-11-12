@@ -13,6 +13,7 @@ import (
 	"github.com/otie173/odncore/internal/utils/database"
 	"github.com/otie173/odncore/internal/utils/filesystem"
 	"github.com/otie173/odncore/internal/utils/logger"
+	"github.com/otie173/odncore/internal/utils/webhook/discord"
 )
 
 func init() {
@@ -24,6 +25,8 @@ func init() {
 	if err := database.NewDatabase(); err != nil {
 		logger.Fatal("Error: ", err)
 	}
+
+	discord.InitDiscord()
 
 	world.InitWorld()
 	player.InitPlayer(config.Cfg)
@@ -45,11 +48,18 @@ func run() {
 	}()
 	logger.Info("Server is running. Press CTRL+C to stop.")
 
+	if discord.WebhookEnabled() {
+		discord.SendMessage("Server is running")
+	}
+
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)
 	<-signalChan
 
 	logger.Info("Shutting down server")
+	if discord.WebhookEnabled() {
+		discord.SendMessage("Shutting down server")
+	}
 	server.Stop()
 
 	config.Save()
