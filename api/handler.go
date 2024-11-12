@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/json"
 	"io"
-	"log"
 	"net/http"
 	"os"
 
@@ -21,28 +20,6 @@ func StatusHandler(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewEncoder(w).Encode(status); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-}
-
-func GetWorldHandler(w http.ResponseWriter, r *http.Request) {
-	world.Save()
-
-	worldData, err := os.ReadFile(filesystem.WORLD_DIR_PATH + "world.odn")
-	if err != nil {
-		logger.Errorf("Error with read world file: %v", err)
-	}
-
-	w.Write(worldData)
-}
-
-func LoadWorldHandler(w http.ResponseWriter, r *http.Request) {
-	bodyData, err := io.ReadAll(r.Body)
-	if err != nil {
-		logger.Errorf("Error with read request body: %v", err)
-	}
-	defer r.Body.Close()
-
-	log.Println(bodyData)
-	w.Write(bodyData)
 }
 
 func AuthHandler(w http.ResponseWriter, r *http.Request) {
@@ -70,4 +47,37 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 
 		player.AddPlayer(r.RemoteAddr, playerAuth.Nickname)
 	}
+}
+
+func LoadIdHandler(w http.ResponseWriter, r *http.Request) {
+	idData, err := io.ReadAll(r.Body)
+	if err != nil {
+		logger.Errorf("Error with read request body: %v", err)
+	}
+	defer r.Body.Close()
+
+	world.LoadIdNetwork(idData)
+	logger.Info("Id from network was saved succesfully")
+}
+
+func GetWorldHandler(w http.ResponseWriter, r *http.Request) {
+	world.Save()
+
+	worldData, err := os.ReadFile(filesystem.WORLD_DIR_PATH + "world.odn")
+	if err != nil {
+		logger.Errorf("Error with read world file: %v", err)
+	}
+
+	w.Write(worldData)
+}
+
+func LoadWorldHandler(w http.ResponseWriter, r *http.Request) {
+	worldData, err := io.ReadAll(r.Body)
+	if err != nil {
+		logger.Errorf("Error with read request body: %v", err)
+	}
+	defer r.Body.Close()
+
+	world.ByteToFile(worldData)
+	logger.Info("World from network was saved succesfully")
 }

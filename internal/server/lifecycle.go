@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/olahol/melody"
-	"github.com/otie173/odncore/internal/game/world"
 	"github.com/otie173/odncore/internal/utils/logger"
+	"github.com/otie173/odncore/internal/utils/webhook/discord"
 )
 
 func Start() {
@@ -23,25 +23,10 @@ func Start() {
 			return
 		}
 		playersConnected++
-		logger.Info("Player connected: ", sessionNickname)
+		logger.Info("Player connected: " + sessionNickname)
 
-		if world.IsIdWaiting {
-			if playersConnected == 1 {
-				if err := AskId(session); err != nil {
-					logger.Fatal("Fail with ask id from client: ", err)
-				}
-			}
-		}
-		if world.IsWorldWaiting {
-			if playersConnected == 1 {
-				if err := AskWorld(session); err != nil {
-					logger.Fatal("Fail with ask world from client: ", err)
-				}
-			}
-		} else {
-			if err := SendWorld(session); err != nil {
-				logger.Fatal("Fail with send world to client: ", err)
-			}
+		if discord.WebhookEnabled() {
+			discord.PlayerMessage("Player connected:", sessionNickname)
 		}
 	})
 
@@ -51,7 +36,11 @@ func Start() {
 		rejected, _ := session.Get("rejected")
 		if rejected == nil && playersConnected > 0 {
 			playersConnected--
-			logger.Info("Player disconnected: ", sessionNickname)
+			logger.Info("Player disconnected: " + sessionNickname)
+
+			if discord.WebhookEnabled() {
+				discord.PlayerMessage("Player disconnected:", sessionNickname)
+			}
 		}
 	})
 

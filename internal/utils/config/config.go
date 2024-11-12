@@ -14,8 +14,10 @@ var (
 const CONFIG_PATH string = "config.json"
 
 type Config struct {
-	Address    string `json:"address"`
-	MaxPlayers int    `json:"max_player"`
+	Address            string `json:"address"`
+	MaxPlayers         int    `json:"max_player"`
+	DiscordWebhook     string `json:"discord_webhook"`
+	DiscordWebhookName string `json:"discord_webhook_name"`
 }
 
 func NewConfig() {

@@ -59,15 +59,15 @@ func Save() {
 
 	err := os.WriteFile(filesystem.WORLD_DIR_PATH+"world.odn", data, 0644)
 	if err != nil {
-		logger.Fatalf("Не удалось сохранить мир: %v", err)
+		logger.Fatalf("Error with write world file: %v", err)
 	}
-	logger.Info("Мир успешно сохранен")
+	logger.Info("World saved succesfully")
 }
 
 func Load() {
 	data, err := os.ReadFile(filesystem.WORLD_DIR_PATH + "world.odn")
 	if err != nil {
-		log.Printf("Ошибка при чтении файла: %v", err)
+		log.Printf("Error with read world file: %v", err)
 	}
 
 	blocks := make([]byte, (WORLD_SIZE+1)*(WORLD_SIZE+1))
@@ -88,8 +88,8 @@ func Load() {
 	index := 0
 	for y := -WORLD_SIZE / 2; y <= WORLD_SIZE/2; y++ {
 		for x := -WORLD_SIZE / 2; x <= WORLD_SIZE/2; x++ {
-			textureID := int(blocks[index]) - 1 // Вычитаем 1, чтобы вернуться к оригинальному ID
-			if textureID >= 0 {                 // Загружаем только непустые блоки
+			textureID := int(blocks[index]) - 1
+			if textureID >= 0 {
 				rect := Rectangle{
 					X:      float32(x) * TILE_SIZE,
 					Y:      float32(y) * TILE_SIZE,
@@ -112,37 +112,38 @@ func Load() {
 	}
 	world = loadedWorld
 	IsWorldWaiting = false
+	logger.Info("World loaded succesfully")
 }
 
 func SaveId() {
 	data, err := msgpack.Marshal(&id)
 	if err != nil {
-		logger.Error("Error with saving id list: ", err)
+		logger.Error("Error with marshal id: ", err)
 	}
 
 	os.WriteFile(filesystem.WORLD_DIR_PATH+"id.odn", data, 0644)
-	logger.Info("Id list saved succesfully")
+	logger.Info("Id saved succesfully")
 }
 
 func LoadIdNetwork(data []byte) {
 	if err := msgpack.Unmarshal(data, &id); err != nil {
-		logger.Error("Error with loading id list from network: ", err)
+		logger.Error("Error with unmarshal id: ", err)
 	}
 	IsIdWaiting = false
-	logger.Info("Id list loaded succesfully")
+	logger.Info("Id loaded succesfully")
 }
 
 func LoadIdFile() {
 	data, err := os.ReadFile(filesystem.WORLD_DIR_PATH + "id.odn")
 	if err != nil {
-		logger.Error("Error with loading id list from file: ", err)
+		logger.Error("Error with loading id from file: ", err)
 	}
 
 	if err := msgpack.Unmarshal(data, &id); err != nil {
-		logger.Error("Error with loading id list from file: ", err)
+		logger.Error("Error with unmarshal id: ", err)
 	}
 	IsIdWaiting = false
-	logger.Info("Id list loaded succesfully")
+	logger.Info("Id loaded succesfully")
 }
 
 func ByteToFile(data []byte) error {
