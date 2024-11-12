@@ -1,6 +1,0 @@
-{
- "address": "0.0.0.0:8080",
- "max_player": 16,
- "discord_webhook": "https://discord.com/api/webhooks/1305956045289685102/Kd1d1Z5tgTb-BT-ZhxiQDo9cnKe94LEdlX1knCLeigAa6pgp0fdkSJYzVlfOpb-uZhFc",
- "discord_webhook_name": "Server Logs"
-}
