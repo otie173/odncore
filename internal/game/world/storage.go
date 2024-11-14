@@ -1,11 +1,9 @@
 package world
 
 import (
-	"log"
 	"os"
 
 	"github.com/otie173/odncore/internal/utils/filesystem"
-	"github.com/otie173/odncore/internal/utils/logger"
 	"github.com/vmihailenco/msgpack/v5"
 )
 
@@ -14,7 +12,7 @@ const (
 	BLOCK_MASK = (1 << BLOCK_BITS) - 1
 )
 
-func Save() {
+func Save() error {
 	blocks := make([]byte, (WORLD_SIZE+1)*(WORLD_SIZE+1))
 	index := 0
 	for y := -WORLD_SIZE / 2; y <= WORLD_SIZE/2; y++ {
@@ -35,12 +33,11 @@ func Save() {
 					}
 				}
 				if textureID >= (1 << BLOCK_BITS) {
-					logger.Warnf("Предупреждение: ID блока %d превышает максимальное значение %d", textureID, (1<<BLOCK_BITS)-1)
-					textureID = 0 // или какое-то другое значение по умолчанию
+					textureID = 0
 				}
-				blocks[index] = textureID + 1 // Добавляем 1, чтобы 0 означало пустой блок
+				blocks[index] = textureID + 1
 			} else {
-				blocks[index] = 0 // Пустой блок
+				blocks[index] = 0
 			}
 			index++
 		}
@@ -59,15 +56,15 @@ func Save() {
 
 	err := os.WriteFile(filesystem.WORLD_DIR_PATH+"world.odn", data, 0644)
 	if err != nil {
-		logger.Fatalf("Error with write world file: %v", err)
+		return err
 	}
-	logger.Info("World saved succesfully")
+	return nil
 }
 
-func Load() {
+func Load() error {
 	data, err := os.ReadFile(filesystem.WORLD_DIR_PATH + "world.odn")
 	if err != nil {
-		log.Printf("Error with read world file: %v", err)
+		return err
 	}
 
 	blocks := make([]byte, (WORLD_SIZE+1)*(WORLD_SIZE+1))
@@ -112,38 +109,38 @@ func Load() {
 	}
 	world = loadedWorld
 	IsWorldWaiting = false
-	logger.Info("World loaded succesfully")
+	return nil
 }
 
-func SaveId() {
+func SaveId() error {
 	data, err := msgpack.Marshal(&id)
 	if err != nil {
-		logger.Error("Error with marshal id: ", err)
+		return err
 	}
 
 	os.WriteFile(filesystem.WORLD_DIR_PATH+"id.odn", data, 0644)
-	logger.Info("Id saved succesfully")
+	return nil
 }
 
-func LoadIdNetwork(data []byte) {
+func LoadIdNetwork(data []byte) error {
 	if err := msgpack.Unmarshal(data, &id); err != nil {
-		logger.Error("Error with unmarshal id: ", err)
+		return err
 	}
 	IsIdWaiting = false
-	logger.Info("Id loaded succesfully")
+	return nil
 }
 
-func LoadIdFile() {
+func LoadIdFile() error {
 	data, err := os.ReadFile(filesystem.WORLD_DIR_PATH + "id.odn")
 	if err != nil {
-		logger.Error("Error with loading id from file: ", err)
+		return err
 	}
 
 	if err := msgpack.Unmarshal(data, &id); err != nil {
-		logger.Error("Error with unmarshal id: ", err)
+		return err
 	}
 	IsIdWaiting = false
-	logger.Info("Id loaded succesfully")
+	return nil
 }
 
 func ByteToFile(data []byte) error {
@@ -151,7 +148,8 @@ func ByteToFile(data []byte) error {
 	if err != nil {
 		return err
 	}
-	Load()
-
+	if err := Load(); err != nil {
+		return err
+	}
 	return nil
 }

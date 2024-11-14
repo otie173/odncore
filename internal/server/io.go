@@ -8,12 +8,12 @@ import (
 	"github.com/vmihailenco/msgpack/v5"
 )
 
-func handleRequest(opcode byte, data []byte) {
+func handleRequest(opcode byte, data []byte) error {
 	switch opcode {
 	case BLOCK_PACKET:
 		var packet map[string]interface{}
 		if err := msgpack.Unmarshal(data, &packet); err != nil {
-			logger.Error("Error unmarshalling data:", err)
+			return err
 		}
 
 		switch typeconv.GetByte(packet["Action"]) {
@@ -31,11 +31,14 @@ func handleRequest(opcode byte, data []byte) {
 			)
 		}
 	}
+	return nil
 }
 
 func SetupReadHandler() {
 	websocket.HandleMessageBinary(func(s *melody.Session, b []byte) {
-		handleRequest(b[0], b[1:])
+		if err := handleRequest(b[0], b[1:]); err != nil {
+			logger.Errorf("Error with handle request from client: %v", err)
+		}
 	})
 }
 

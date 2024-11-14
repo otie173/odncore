@@ -5,7 +5,6 @@ import (
 
 	"github.com/gtuk/discordwebhook"
 	"github.com/otie173/odncore/internal/utils/config"
-	"github.com/otie173/odncore/internal/utils/logger"
 )
 
 var (
@@ -15,12 +14,9 @@ var (
 )
 
 func InitDiscord() {
-	webhookURL = config.Cfg.DiscordWebhook
+	webhookEnabled = config.Cfg.DiscordWebhookEnabled
+	webhookURL = config.Cfg.DiscordWebhookURL
 	webhookName = config.Cfg.DiscordWebhookName
-
-	if webhookURL != "" && webhookName != "" {
-		webhookEnabled = true
-	}
 }
 
 func WebhookEnabled() bool {
@@ -30,25 +26,27 @@ func WebhookEnabled() bool {
 	return false
 }
 
-func SendMessage(content string) {
+func SendMessage(content string) error {
 	message := discordwebhook.Message{
 		Username: &webhookName,
 		Content:  &content,
 	}
 
 	if err := discordwebhook.SendMessage(webhookURL, message); err != nil {
-		logger.Error(err)
+		return err
 	}
+	return nil
 }
 
-func PlayerMessage(text, name string) {
-	content := fmt.Sprintf("%s **%s**", text, name)
+func PlayerMessage(name, text string) error {
+	content := fmt.Sprintf("**%s** %s", name, text)
 	message := discordwebhook.Message{
 		Username: &webhookName,
 		Content:  &content,
 	}
 
 	if err := discordwebhook.SendMessage(webhookURL, message); err != nil {
-		logger.Error(err)
+		return err
 	}
+	return nil
 }

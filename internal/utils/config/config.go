@@ -3,8 +3,6 @@ package config
 import (
 	"encoding/json"
 	"os"
-
-	"github.com/otie173/odncore/internal/utils/logger"
 )
 
 var (
@@ -14,10 +12,11 @@ var (
 const CONFIG_PATH string = "config.json"
 
 type Config struct {
-	Address            string `json:"address"`
-	MaxPlayers         int    `json:"max_player"`
-	DiscordWebhook     string `json:"discord_webhook"`
-	DiscordWebhookName string `json:"discord_webhook_name"`
+	Address               string `json:"address"`
+	MaxPlayers            int    `json:"max_player"`
+	DiscordWebhookEnabled bool   `json:"discord_webhook_enabled"`
+	DiscordWebhookURL     string `json:"discord_webhook_url"`
+	DiscordWebhookName    string `json:"discord_webhook_name"`
 }
 
 func NewConfig() {
@@ -34,19 +33,15 @@ func Load() error {
 
 	file, err := os.ReadFile(CONFIG_PATH)
 	if err != nil {
-		logger.Fatal("Failed to load config: ", err)
+		return err
 	}
-
 	return json.Unmarshal(file, &Cfg)
 }
 
 func Save() error {
 	data, err := json.MarshalIndent(Cfg, "", " ")
 	if err != nil {
-		logger.Error("Error saving config: ", err)
-	} else {
-		logger.Info("Config saved successfully")
+		return err
 	}
-
 	return os.WriteFile(CONFIG_PATH, data, 0644)
 }

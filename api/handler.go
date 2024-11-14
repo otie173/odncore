@@ -56,8 +56,9 @@ func LoadIdHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	world.LoadIdNetwork(idData)
-	logger.Info("Id from network was saved succesfully")
+	if err := world.LoadIdNetwork(idData); err != nil {
+		logger.Error("Error with load id from network: ", err)
+	}
 }
 
 func GetWorldHandler(w http.ResponseWriter, r *http.Request) {
@@ -78,6 +79,7 @@ func LoadWorldHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	world.ByteToFile(worldData)
-	logger.Info("World from network was saved succesfully")
+	if err := world.ByteToFile(worldData); err != nil {
+		logger.Error("Error with convert world bytes to file: ", err)
+	}
 }

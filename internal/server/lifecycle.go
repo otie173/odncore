@@ -5,7 +5,6 @@ import (
 
 	"github.com/olahol/melody"
 	"github.com/otie173/odncore/internal/utils/logger"
-	"github.com/otie173/odncore/internal/utils/webhook/discord"
 )
 
 func Start() {
@@ -23,11 +22,7 @@ func Start() {
 			return
 		}
 		playersConnected++
-		logger.Info("Player connected: " + sessionNickname)
-
-		if discord.WebhookEnabled() {
-			discord.PlayerMessage("Player connected:", sessionNickname)
-		}
+		logger.Player(sessionNickname, "joined the game")
 	})
 
 	websocket.HandleDisconnect(func(session *melody.Session) {
@@ -36,11 +31,7 @@ func Start() {
 		rejected, _ := session.Get("rejected")
 		if rejected == nil && playersConnected > 0 {
 			playersConnected--
-			logger.Info("Player disconnected: " + sessionNickname)
-
-			if discord.WebhookEnabled() {
-				discord.PlayerMessage("Player disconnected:", sessionNickname)
-			}
+			logger.Player(sessionNickname, "left the game")
 		}
 	})
 
@@ -50,7 +41,9 @@ func Start() {
 	}
 }
 
-func Stop() {
-	websocket.Close()
-	logger.Info("Server was stopped")
+func Stop() error {
+	if err := websocket.Close(); err != nil {
+		return err
+	}
+	return nil
 }

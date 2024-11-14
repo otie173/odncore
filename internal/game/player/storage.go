@@ -6,23 +6,23 @@ import (
 
 	"github.com/otie173/odncore/internal/utils/config"
 	"github.com/otie173/odncore/internal/utils/filesystem"
-	"github.com/otie173/odncore/internal/utils/logger"
 	"github.com/vmihailenco/msgpack/v5"
 )
 
-func InitPlayer(cfg config.Config) {
+func InitPlayer(cfg config.Config) error {
 	dirs := []string{filesystem.PLAYERS_DIR_PATH, filesystem.PLAYER_DATA_DIR_PATH, filesystem.PLAYER_DB_PATH}
 
 	for _, path := range dirs {
 		if !filesystem.DirExists(path) {
 			err := os.Mkdir(path, 0755)
 			if err != nil {
-				logger.Error("Error creating directory: ", err)
+				return err
 			}
 		}
 	}
 
 	players = make(map[string]Player, cfg.MaxPlayers)
+	return nil
 }
 
 func GetName(addr string) string {
@@ -50,10 +50,9 @@ func Save(addr string) error {
 	}
 
 	os.WriteFile(filesystem.PLAYER_DATA_DIR_PATH+players[addr].nickname+".odn", data, 0644)
-	logger.Info("Inventory saved succesfully")
 	return nil
 }
 
-func Load(nickname string) {
-
+func Load(nickname string) error {
+	return nil
 }

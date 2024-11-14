@@ -20,16 +20,23 @@ func init() {
 	logger.Register()
 
 	config.NewConfig()
-	config.Load()
+	if err := config.Load(); err != nil {
+		logger.Fatal("Error with load config: ", err)
+	}
 
 	if err := database.NewDatabase(); err != nil {
-		logger.Fatal("Error: ", err)
+		logger.Fatal("Error with create database: ", err)
 	}
 
 	discord.InitDiscord()
 
-	world.InitWorld()
-	player.InitPlayer(config.Cfg)
+	if err := world.InitWorld(); err != nil {
+		logger.Fatal("Error with init world: ", err)
+	}
+
+	if err := player.InitPlayer(config.Cfg); err != nil {
+		logger.Fatal("Error with init player: ", err)
+	}
 }
 
 func run() {
@@ -37,38 +44,46 @@ func run() {
 	server.SetupReadHandler()
 	api.SetupRoutes()
 	if filesystem.FileExists(filesystem.WORLD_DIR_PATH + "id.odn") {
-		world.LoadIdFile()
+		if err := world.LoadIdFile(); err != nil {
+			logger.Fatal("Error with load id file for world: ", err)
+		}
 	}
 	if filesystem.FileExists(filesystem.WORLD_DIR_PATH + "world.odn") {
-		world.Load()
+		if err := world.Load(); err != nil {
+			logger.Fatal("Error with load world: ", err)
+		}
 	}
 
 	go func() {
 		server.Start()
 	}()
-	logger.Info("Server is running. Press CTRL+C to stop.")
-
-	if discord.WebhookEnabled() {
-		discord.SendMessage("Server is running")
-	}
+	logger.Server("Server is running")
 
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)
 	<-signalChan
 
-	logger.Info("Shutting down server")
-	if discord.WebhookEnabled() {
-		discord.SendMessage("Shutting down server")
+	logger.Server("Shutting down server")
+	if err := server.Stop(); err != nil {
+		logger.Error("Error with stop the server: ", err)
 	}
-	server.Stop()
 
-	config.Save()
-	database.Save()
+	if err := config.Save(); err != nil {
+		logger.Error("Error with save config: ", err)
+	}
+
+	if err := database.Save(); err != nil {
+		logger.Error("Error with save database: ", err)
+	}
 	if !world.IsIdWaiting {
-		world.SaveId()
+		if err := world.SaveId(); err != nil {
+			logger.Error("Error with save id file: ", err)
+		}
 	}
 	if !world.IsWorldWaiting {
-		world.Save()
+		if err := world.Save(); err != nil {
+			logger.Error("Errorw with save world: ", err)
+		}
 	}
 }
 

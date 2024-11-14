@@ -15,7 +15,6 @@ const (
 	MAX_BUFFER_SIZE int64 = 102400
 )
 
-// Opcodes for requests to client
 const (
 	SEND_WORLD byte = iota
 	RECEIVE_WORLD

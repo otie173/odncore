@@ -4,7 +4,6 @@ import (
 	"os"
 
 	"github.com/otie173/odncore/internal/utils/filesystem"
-	"github.com/otie173/odncore/internal/utils/logger"
 )
 
 type Rectangle struct {
@@ -104,7 +103,7 @@ const (
 	SEED2BIG
 )
 
-func InitWorld() {
+func InitWorld() error {
 	world = make(map[Rectangle]Block, WORLD_SIZE*WORLD_SIZE)
 	id = make(map[int]Texture2D, MAX_ID)
 
@@ -114,7 +113,7 @@ func InitWorld() {
 		if !filesystem.DirExists(path) {
 			err := os.Mkdir(path, 0755)
 			if err != nil {
-				logger.Error("Error creating directory: ", err)
+				return err
 			}
 		}
 	}
@@ -123,6 +122,7 @@ func InitWorld() {
 		IsWorldWaiting = true
 	}
 	IsIdWaiting = true
+	return nil
 }
 
 func AddBlock(img uint32, x, y float32, passable bool) {
@@ -132,12 +132,8 @@ func AddBlock(img uint32, x, y float32, passable bool) {
 		passable: passable,
 	}
 	world[block.rec] = block
-
-	logger.Infof("Игрок поставил блок ID: %d на позиции X: %.0f, Y: %.0f и его поле Passable: %t\n", img, x, y, passable)
 }
 
 func RemoveBlock(x, y float32) {
 	delete(world, Rectangle{x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE})
-
-	logger.Infof("Игрок удалил блок на позиции X: %.0f, Y: %.0f\n", x, y)
 }

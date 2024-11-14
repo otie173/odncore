@@ -1,7 +1,6 @@
 package database
 
 import (
-	"github.com/otie173/odncore/internal/utils/logger"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
@@ -29,12 +28,11 @@ func Close() error {
 	return nil
 }
 
-func Save() {
+func Save() error {
 	if err := Close(); err != nil {
-		logger.Error("Error saving database: ", err)
-	} else {
-		logger.Info("Database saved successfully")
+		return err
 	}
+	return nil
 }
 
 func AddPlayer(nickname string, password string) {

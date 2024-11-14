@@ -6,6 +6,8 @@ import (
 	"strings"
 
 	"log"
+
+	"github.com/otie173/odncore/internal/utils/webhook/discord"
 )
 
 var (
@@ -52,4 +54,24 @@ func Fatal(text ...any) {
 
 func Fatalf(format string, args ...any) {
 	fatalLogger.Fatalf(format, args...)
+}
+
+func Server(text string) {
+	Info(text)
+
+	if discord.WebhookEnabled() {
+		if err := discord.SendMessage(text); err != nil {
+			Error("Error with send discord webhook message: ", err)
+		}
+	}
+}
+
+func Player(name, text string) {
+	Infof("%s %s\n", name, text)
+
+	if discord.WebhookEnabled() {
+		if err := discord.PlayerMessage(fmt.Sprintf("**%s**", name), text); err != nil {
+			Error("Error with send discord webhook message: ", err)
+		}
+	}
 }
