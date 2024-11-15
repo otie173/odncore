@@ -16,7 +16,7 @@ import (
 	"github.com/otie173/odncore/internal/utils/webhook/discord"
 )
 
-func init() {
+func main() {
 	logger.Register()
 
 	config.NewConfig()
@@ -37,9 +37,7 @@ func init() {
 	if err := player.InitPlayer(config.Cfg); err != nil {
 		logger.Fatal("Error with init player: ", err)
 	}
-}
 
-func run() {
 	server.New(config.Cfg.Address, config.Cfg.MaxPlayers)
 	server.SetupReadHandler()
 	api.SetupRoutes()
@@ -85,8 +83,4 @@ func run() {
 			logger.Error("Errorw with save world: ", err)
 		}
 	}
-}
-
-func main() {
-	run()
 }
