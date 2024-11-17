@@ -14,9 +14,10 @@ var (
 )
 
 func InitDiscord() {
-	webhookEnabled = config.Cfg.DiscordWebhookEnabled
-	webhookURL = config.Cfg.DiscordWebhookURL
-	webhookName = config.Cfg.DiscordWebhookName
+	cfg := config.GetConfig()
+	webhookEnabled = cfg.DiscordWebhookEnabled
+	webhookURL = cfg.DiscordWebhookURL
+	webhookName = cfg.DiscordWebhookName
 }
 
 func WebhookEnabled() bool {

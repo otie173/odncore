@@ -32,9 +32,14 @@ const (
 )
 
 type ServerStatus struct {
+	IdWaiting    bool `json:"id_waiting"`
+	WorldWaiting bool `json:"world_waiting"`
+}
+
+type ServerInfo struct {
+	Name             string `json:"name"`
+	Description      string `json:"description"`
 	Address          string `json:"address"`
-	IdWaiting        bool   `json:"id_waiting"`
-	WorldWaiting     bool   `json:"world_waiting"`
 	PlayersConnected int    `json:"players_connected"`
 	MaxPlayers       int    `json:"max_players"`
 }

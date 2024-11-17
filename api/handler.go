@@ -10,6 +10,7 @@ import (
 	"github.com/otie173/odncore/internal/game/player"
 	"github.com/otie173/odncore/internal/game/world"
 	"github.com/otie173/odncore/internal/server"
+	"github.com/otie173/odncore/internal/utils/config"
 	"github.com/otie173/odncore/internal/utils/database"
 	"github.com/otie173/odncore/internal/utils/filesystem"
 	"github.com/otie173/odncore/internal/utils/logger"
@@ -18,6 +19,13 @@ import (
 func StatusHandler(w http.ResponseWriter, r *http.Request) {
 	status := server.GetStatus()
 	if err := json.NewEncoder(w).Encode(status); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+func InfoHandler(w http.ResponseWriter, r *http.Request) {
+	info := server.GetInfo(config.GetConfig())
+	if err := json.NewEncoder(w).Encode(info); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }

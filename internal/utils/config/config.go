@@ -6,12 +6,14 @@ import (
 )
 
 var (
-	Cfg Config
+	cfg Config
 )
 
 const CONFIG_PATH string = "config.json"
 
 type Config struct {
+	ServerName            string `json:"server_name"`
+	ServerDescription     string `json:"server_description"`
 	Address               string `json:"address"`
 	MaxPlayers            int    `json:"max_player"`
 	DiscordWebhookEnabled bool   `json:"discord_webhook_enabled"`
@@ -20,10 +22,14 @@ type Config struct {
 }
 
 func NewConfig() {
-	Cfg = Config{
+	cfg = Config{
 		Address:    "0.0.0.0:8080",
 		MaxPlayers: 16,
 	}
+}
+
+func GetConfig() Config {
+	return cfg
 }
 
 func Load() error {
@@ -35,11 +41,11 @@ func Load() error {
 	if err != nil {
 		return err
 	}
-	return json.Unmarshal(file, &Cfg)
+	return json.Unmarshal(file, &cfg)
 }
 
 func Save() error {
-	data, err := json.MarshalIndent(Cfg, "", " ")
+	data, err := json.MarshalIndent(cfg, "", " ")
 	if err != nil {
 		return err
 	}
