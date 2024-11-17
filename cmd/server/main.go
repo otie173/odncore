@@ -23,6 +23,7 @@ func main() {
 	if err := config.Load(); err != nil {
 		logger.Fatal("Error with load config: ", err)
 	}
+	cfg := config.GetConfig()
 
 	if err := database.NewDatabase(); err != nil {
 		logger.Fatal("Error with create database: ", err)
@@ -34,11 +35,11 @@ func main() {
 		logger.Fatal("Error with init world: ", err)
 	}
 
-	if err := player.InitPlayer(config.Cfg); err != nil {
+	if err := player.InitPlayer(cfg); err != nil {
 		logger.Fatal("Error with init player: ", err)
 	}
 
-	server.New(config.Cfg.Address, config.Cfg.MaxPlayers)
+	server.New(cfg.Address, cfg.MaxPlayers)
 	server.SetupReadHandler()
 	api.SetupRoutes()
 	if filesystem.FileExists(filesystem.WORLD_DIR_PATH + "id.odn") {
