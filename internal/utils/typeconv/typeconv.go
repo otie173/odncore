@@ -13,6 +13,12 @@ func GetUint32(v interface{}) uint32 {
 	}
 	return 0
 }
+func GetPtrUint32(v interface{}) *uint32 {
+	if val, ok := v.(uint32); ok {
+		return &val
+	}
+	return nil
+}
 
 func GetFloat32(v interface{}) float32 {
 	if val, ok := v.(float32); ok {

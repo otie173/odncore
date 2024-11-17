@@ -53,6 +53,10 @@ func Save(addr string) error {
 	return nil
 }
 
-func Load(nickname string) error {
-	return nil
+func Load(nickname string) ([]byte, error) {
+	data, err := os.ReadFile(filesystem.PLAYER_DATA_DIR_PATH + nickname + ".odn")
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
 }

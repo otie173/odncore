@@ -49,6 +49,20 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func GetPDataHandler(w http.ResponseWriter, r *http.Request) {
+	playerNickname := r.Header.Get("Session-Nickname")
+
+	if filesystem.FileExists(filesystem.PLAYER_DATA_DIR_PATH + playerNickname + ".odn") {
+		playerData, err := player.Load(playerNickname)
+		if err != nil {
+			logger.Error("Error with load player data: ", err)
+		}
+		w.Write(playerData)
+	} else {
+		return
+	}
+}
+
 func LoadIdHandler(w http.ResponseWriter, r *http.Request) {
 	idData, err := io.ReadAll(r.Body)
 	if err != nil {
