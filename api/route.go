@@ -12,5 +12,6 @@ func SetupRoutes() {
 
 	http.HandleFunc("POST /api/auth", AuthHandler)
 	http.HandleFunc("POST /api/loadid", LoadIdHandler)
+	http.HandleFunc("POST /api/loadpdata", LoadPDataHandler)
 	http.HandleFunc("POST /api/loadworld", LoadWorldHandler)
 }

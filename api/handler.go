@@ -52,8 +52,6 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("FAIL"))
 	case true:
 		w.Write([]byte("OK"))
-
-		player.AddPlayer(r.RemoteAddr, playerAuth.Nickname)
 	}
 }
 
@@ -64,10 +62,26 @@ func GetPDataHandler(w http.ResponseWriter, r *http.Request) {
 		playerData, err := player.Load(playerNickname)
 		if err != nil {
 			logger.Error("Error with load player data: ", err)
+			return
 		}
+		w.WriteHeader(http.StatusOK)
 		w.Write(playerData)
 	} else {
-		return
+		w.WriteHeader(http.StatusNotFound)
+	}
+}
+
+func LoadPDataHandler(w http.ResponseWriter, r *http.Request) {
+	playerNickname := r.Header.Get("Session-Nickname")
+
+	playerData, err := io.ReadAll(r.Body)
+	if err != nil {
+		logger.Errorf("Error with read request body: %v", err)
+	}
+	defer r.Body.Close()
+
+	if err := player.Save(playerNickname, playerData); err != nil {
+		logger.Error("Error with save player data: ", err)
 	}
 }
 
