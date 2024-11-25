@@ -11,6 +11,8 @@ func LoginPlayer(nickname, password string) bool {
 		logger.Error("Error with get password hash: ", err)
 	}
 
-	validPassword := checkPassword(password, string(passwordHash))
-	return validPassword
+	if err := CheckPassword(password, string(passwordHash)); err != nil {
+		return false
+	}
+	return true
 }

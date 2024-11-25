@@ -1,6 +1,8 @@
 package server
 
 import (
+	"log"
+
 	"github.com/olahol/melody"
 	"github.com/otie173/odncore/internal/game/world"
 	"github.com/otie173/odncore/internal/utils/logger"
@@ -8,10 +10,13 @@ import (
 	"github.com/vmihailenco/msgpack/v5"
 )
 
+var (
+	packet map[string]interface{}
+)
+
 func handleRequest(session *melody.Session, opcode byte, data []byte) error {
 	switch opcode {
 	case BLOCK_PACKET:
-		var packet map[string]interface{}
 		if err := msgpack.Unmarshal(data, &packet); err != nil {
 			return err
 		}
@@ -32,6 +37,15 @@ func handleRequest(session *melody.Session, opcode byte, data []byte) error {
 				typeconv.GetFloat32(packet["Y"]),
 			)
 			sendBlockPacket(session, REMOVE_BLOCK, typeconv.GetFloat32(packet["X"]), typeconv.GetFloat32(packet["Y"]), nil)
+		}
+	case PLAYER_PACKET:
+		if err := msgpack.Unmarshal(data, &packet); err != nil {
+			return err
+		}
+
+		switch typeconv.GetByte(packet["Action"]) {
+		case PLAYER_MOVE:
+			log.Println(packet)
 		}
 	}
 	return nil

@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"errors"
+
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -13,12 +15,19 @@ type PlayerAuth struct {
 	Password string `json:"password"`
 }
 
-func hashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), HASH_COST)
-	return string(bytes), err
+func GenerateHash(password string) ([]byte, error) {
+	if len(password) == 0 {
+		return nil, errors.New("Password cant be empty")
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), HASH_COST)
+	return hash, err
 }
 
-func checkPassword(password, hash string) bool {
+func CheckPassword(password, hash string) error {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
-	return err == nil
+	if err != nil {
+		return err
+	}
+	return nil
 }

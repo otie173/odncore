@@ -16,19 +16,12 @@ const (
 )
 
 const (
-	SEND_WORLD byte = iota
-	RECEIVE_WORLD
-
-	SEND_ID
-	RECEIVE_ID
-
-	BLOCK_PACKET
+	BLOCK_PACKET byte = iota
 	ADD_BLOCK
 	REMOVE_BLOCK
 
 	PLAYER_PACKET
-	SAVE_PLAYER_DATA
-	LOAD_PLAYER_DATA
+	PLAYER_MOVE
 )
 
 type ServerStatus struct {

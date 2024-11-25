@@ -6,11 +6,11 @@ import (
 )
 
 func RegisterPlayer(nickname, password string) bool {
-	hashedPassword, err := hashPassword(password)
+	hashedPassword, err := GenerateHash(password)
 	if err != nil {
 		logger.Error("Error with hash password: ", err)
 		return false
 	}
-	database.AddPlayer(nickname, hashedPassword)
+	database.AddPlayer(nickname, string(hashedPassword))
 	return true
 }
