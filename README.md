@@ -16,6 +16,7 @@ In the **docs/** folder you can find information such as:
 - how the server's API works
 - how does the server architecture work and why is this the case?
 - what incoming and outgoing network packets exist and their description
+- how to set up the config and what each setting is responsible for
 
 ## Contributing
 Odncore is open source for a reason. Anyone can contribute. If you have any difficulties, please contact me via Discord. In order for your changes to be accepted, they must:
