@@ -1,5 +1,5 @@
 ![1730741125721](https://github.com/user-attachments/assets/be5e55ca-c7f4-41f7-9e13-717e094add34)
-## The idea
+# The idea
 The goal of the core is to be easy to use and understand, and this applies to:
 - the core code
 - how it works
@@ -10,3 +10,14 @@ Unlike cores of other games like Minecraft, where the core is the brain of the w
 - allows clients to process these packets
 
 This makes the core not the most important part of the system, but rather a facilitator of communication between clients.
+
+## Introduction
+In the **docs/** folder you can find information such as:
+- how the server's API works
+- how does the server architecture work and why is this the case?
+- what incoming and outgoing network packets exist and their description
+
+## Contributing
+Odncore is open source for a reason. Anyone can contribute. If you have any difficulties, please contact me via Discord. In order for your changes to be accepted, they must:
+- the code must be easy to read and understandable
+- your changes must fit the basic idea of the architecture: simplicity
