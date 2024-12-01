@@ -22,3 +22,14 @@ In the **docs/** folder you can find information such as:
 Odncore is open source for a reason. Anyone can contribute. If you have any difficulties, please contact me via Discord. In order for your changes to be accepted, they must:
 - the code must be easy to read and understandable
 - your changes must fit the basic idea of the architecture: simplicity
+
+### Pull Request Process
+- Make sure that the code matches the style guide
+- Add tests for the new functionality
+- Update the documentation
+- Create a PR with a description of the changes
+
+### Code Style
+- Use talking names
+- Comment on non-obvious solutions
+- Follow the KISS principle
