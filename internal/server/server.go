@@ -12,16 +12,19 @@ var (
 )
 
 const (
-	MAX_BUFFER_SIZE int64 = 102400
+	maxBufferSize int64 = 102400
 )
 
 const (
-	BLOCK_PACKET byte = iota
-	ADD_BLOCK
-	REMOVE_BLOCK
+	blockPacket byte = iota
+	blockAdd
+	blockRemove
 
-	PLAYER_PACKET
-	PLAYER_MOVE
+	playerPacket
+	playerAdd
+	playerRemove
+	playerList
+	playerMove
 )
 
 type ServerStatus struct {
@@ -39,7 +42,7 @@ type ServerInfo struct {
 
 func New(address string, maxPlayersCount int) {
 	m := melody.New()
-	m.Config.MaxMessageSize = MAX_BUFFER_SIZE
+	m.Config.MaxMessageSize = maxBufferSize
 
 	websocket = m
 	addr = address

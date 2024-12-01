@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/olahol/melody"
+	"github.com/otie173/odncore/internal/game/player"
 	"github.com/otie173/odncore/internal/game/world"
 	"github.com/otie173/odncore/internal/utils/logger"
 	"github.com/otie173/odncore/internal/utils/typeconv"
@@ -16,36 +17,46 @@ var (
 
 func handleRequest(session *melody.Session, opcode byte, data []byte) error {
 	switch opcode {
-	case BLOCK_PACKET:
+	case blockPacket:
 		if err := msgpack.Unmarshal(data, &packet); err != nil {
 			return err
 		}
 
 		switch typeconv.GetByte(packet["Action"]) {
-		case ADD_BLOCK:
+		case blockAdd:
 			world.AddBlock(
 				typeconv.GetUint32(packet["Texture"]),
 				typeconv.GetFloat32(packet["X"]),
 				typeconv.GetFloat32(packet["Y"]),
 				typeconv.GetBool(packet["Passable"]),
 			)
-			sendBlockPacket(session, ADD_BLOCK, typeconv.GetFloat32(packet["X"]), typeconv.GetFloat32(packet["Y"]), typeconv.GetPtrUint32(packet["Texture"]))
+			sendBlockPacket(session, blockAdd, typeconv.GetFloat32(packet["X"]), typeconv.GetFloat32(packet["Y"]), typeconv.GetPtrUint32(packet["Texture"]))
 
-		case REMOVE_BLOCK:
+		case blockRemove:
 			world.RemoveBlock(
 				typeconv.GetFloat32(packet["X"]),
 				typeconv.GetFloat32(packet["Y"]),
 			)
-			sendBlockPacket(session, REMOVE_BLOCK, typeconv.GetFloat32(packet["X"]), typeconv.GetFloat32(packet["Y"]), nil)
+			sendBlockPacket(session, blockRemove, typeconv.GetFloat32(packet["X"]), typeconv.GetFloat32(packet["Y"]), nil)
 		}
-	case PLAYER_PACKET:
+	case playerPacket:
 		if err := msgpack.Unmarshal(data, &packet); err != nil {
 			return err
 		}
 
 		switch typeconv.GetByte(packet["Action"]) {
-		case PLAYER_MOVE:
+		case playerMove:
 			log.Println(packet)
+		case playerAdd:
+			player.Add(
+				session.Request.Header.Get("Session-Nickname"),
+				typeconv.GetFloat32(packet["X"]),
+				typeconv.GetFloat32(packet["Y"]),
+				typeconv.GetFloat32(packet["TargetX"]),
+				typeconv.GetFloat32(packet["TargetY"]),
+			)
+		case playerList:
+			sendPlayersList()
 		}
 	}
 	return nil
@@ -65,7 +76,7 @@ func sendBlockPacket(sender *melody.Session, action byte, x, y float32, texture 
 		"X":      x,
 		"Y":      y,
 	}
-	if action == ADD_BLOCK && texture != nil {
+	if action == blockAdd && texture != nil {
 		packet["Texture"] = *texture
 	}
 
@@ -73,15 +84,17 @@ func sendBlockPacket(sender *melody.Session, action byte, x, y float32, texture 
 	if err != nil {
 		return err
 	}
-	dataToSend := append([]byte{BLOCK_PACKET}, binaryPacket...)
 
-	return websocket.BroadcastBinaryFilter(dataToSend, func(session *melody.Session) bool {
+	return websocket.BroadcastBinaryFilter(append([]byte{blockPacket}, binaryPacket...), func(session *melody.Session) bool {
 		return sender != session
 	})
 }
 
-func SendToClients(sender *melody.Session, msg []byte) error {
-	return websocket.BroadcastFilter(msg, func(session *melody.Session) bool {
-		return sender != session
-	})
+func sendPlayersList() {
+	list := player.GetList()
+	data, err := msgpack.Marshal(&list)
+	if err != nil {
+		logger.Error("Error with unmarshal players list: ", err)
+	}
+	websocket.BroadcastBinary(append([]byte{playerPacket, playerList}, data...))
 }

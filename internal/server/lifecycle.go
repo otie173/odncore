@@ -4,11 +4,12 @@ import (
 	"net/http"
 
 	"github.com/olahol/melody"
+	"github.com/otie173/odncore/internal/game/player"
 	"github.com/otie173/odncore/internal/utils/logger"
 )
 
 func Start() {
-	http.HandleFunc("GET /", func(res http.ResponseWriter, req *http.Request) {
+	http.HandleFunc("GET /ws", func(res http.ResponseWriter, req *http.Request) {
 		websocket.HandleRequest(res, req)
 	})
 
@@ -23,6 +24,10 @@ func Start() {
 		}
 		playersConnected++
 		logger.Player(sessionNickname, "joined the game")
+
+		if playersConnected > 0 {
+			sendPlayersList()
+		}
 	})
 
 	websocket.HandleDisconnect(func(session *melody.Session) {
@@ -31,6 +36,8 @@ func Start() {
 		rejected, _ := session.Get("rejected")
 		if rejected == nil && playersConnected > 0 {
 			playersConnected--
+			player.Remove(session.Request.Header.Get("Session-Nickname"))
+			sendPlayersList()
 			logger.Player(sessionNickname, "left the game")
 		}
 	})
