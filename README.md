@@ -12,7 +12,7 @@ Unlike cores of other games like Minecraft, where the core is the brain of the w
 This makes the core not the most important part of the system, but rather a facilitator of communication between clients.
 
 ## Introduction
-In the **docs/** folder you can find information such as:
+In the `docs/` folder you can find information such as:
 - how the server's API works
 - how does the server architecture work and why is this the case?
 - what incoming and outgoing network packets exist and their description
