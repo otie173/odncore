@@ -1,8 +1,6 @@
 package server
 
 import (
-	"log"
-
 	"github.com/olahol/melody"
 	"github.com/otie173/odncore/internal/game/player"
 	"github.com/otie173/odncore/internal/game/world"
@@ -15,11 +13,11 @@ var (
 	packet map[string]interface{}
 )
 
-func handleRequest(session *melody.Session, opcode byte, data []byte) error {
+func handleRequest(session *melody.Session, opcode byte, data []byte) {
 	switch opcode {
 	case blockPacket:
 		if err := msgpack.Unmarshal(data, &packet); err != nil {
-			return err
+			logger.Error("Failed to unmarshal block packet: ", err)
 		}
 
 		switch typeconv.GetByte(packet["Action"]) {
@@ -37,16 +35,20 @@ func handleRequest(session *melody.Session, opcode byte, data []byte) error {
 				typeconv.GetFloat32(packet["X"]),
 				typeconv.GetFloat32(packet["Y"]),
 			)
-			sendBlockPacket(session, blockRemove, typeconv.GetFloat32(packet["X"]), typeconv.GetFloat32(packet["Y"]), nil)
+			if err := sendBlockPacket(session, blockRemove, typeconv.GetFloat32(packet["X"]), typeconv.GetFloat32(packet["Y"]), nil); err != nil {
+				logger.Error("Failed to send block packet: ", err)
+			}
 		}
 	case playerPacket:
 		if err := msgpack.Unmarshal(data, &packet); err != nil {
-			return err
+			logger.Error("Failed to unmarshal player packet: ", err)
 		}
 
 		switch typeconv.GetByte(packet["Action"]) {
 		case playerMove:
-			log.Println(packet)
+			if err := sendPlayerMove(data); err != nil {
+				logger.Error("Failed to send player move packet: ", err)
+			}
 		case playerAdd:
 			player.Add(
 				session.Request.Header.Get("Session-Nickname"),
@@ -55,18 +57,17 @@ func handleRequest(session *melody.Session, opcode byte, data []byte) error {
 				typeconv.GetFloat32(packet["TargetX"]),
 				typeconv.GetFloat32(packet["TargetY"]),
 			)
-		case playerList:
-			sendPlayersList()
+
+			if err := sendPlayersList(); err != nil {
+				logger.Errorf("Failed to send updated players list: %v", err)
+			}
 		}
 	}
-	return nil
 }
 
 func SetupReadHandler() {
 	websocket.HandleMessageBinary(func(s *melody.Session, b []byte) {
-		if err := handleRequest(s, b[0], b[1:]); err != nil {
-			logger.Errorf("Error with handle request from client: %v", err)
-		}
+		handleRequest(s, b[0], b[1:])
 	})
 }
 
@@ -85,16 +86,33 @@ func sendBlockPacket(sender *melody.Session, action byte, x, y float32, texture 
 		return err
 	}
 
-	return websocket.BroadcastBinaryFilter(append([]byte{blockPacket}, binaryPacket...), func(session *melody.Session) bool {
+	if err := websocket.BroadcastBinaryFilter(append([]byte{blockPacket}, binaryPacket...), func(session *melody.Session) bool {
 		return sender != session
-	})
+	}); err != nil {
+		logger.Error("Error with broadcast block packet: ", err)
+		return err
+	}
+	return nil
 }
 
-func sendPlayersList() {
+func sendPlayersList() error {
 	list := player.GetList()
 	data, err := msgpack.Marshal(&list)
 	if err != nil {
-		logger.Error("Error with unmarshal players list: ", err)
+		logger.Error("Failed to unmarshal players list: ", err)
+		return err
 	}
-	websocket.BroadcastBinary(append([]byte{playerPacket, playerList}, data...))
+	if err := websocket.BroadcastBinary(append([]byte{playerPacket, playerList}, data...)); err != nil {
+		logger.Error("Failed to broadcast player list: ", err)
+		return err
+	}
+	return nil
+}
+
+func sendPlayerMove(data []byte) error {
+	if err := websocket.BroadcastBinary(append([]byte{playerPacket, playerMove}, data...)); err != nil {
+		logger.Error("Failed to broadcast player move data: ", err)
+		return err
+	}
+	return nil
 }

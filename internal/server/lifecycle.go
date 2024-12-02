@@ -15,7 +15,6 @@ func Start() {
 
 	websocket.HandleConnect(func(session *melody.Session) {
 		sessionNickname := session.Request.Header.Get("Session-Nickname")
-
 		if playersConnected >= maxPlayers {
 			session.Write([]byte("Sorry! Server is full"))
 			session.Set("rejected", true)
@@ -24,24 +23,17 @@ func Start() {
 		}
 		playersConnected++
 		logger.Player(sessionNickname, "joined the game")
-
-		if playersConnected > 0 {
-			sendPlayersList()
-		}
 	})
 
 	websocket.HandleDisconnect(func(session *melody.Session) {
 		sessionNickname := session.Request.Header.Get("Session-Nickname")
-
 		rejected, _ := session.Get("rejected")
 		if rejected == nil && playersConnected > 0 {
 			playersConnected--
-			player.Remove(session.Request.Header.Get("Session-Nickname"))
-			sendPlayersList()
+			player.Remove(sessionNickname)
 			logger.Player(sessionNickname, "left the game")
 		}
 	})
-
 	logger.Info("Server started on address", addr)
 	if err := http.ListenAndServe(addr, nil); err != nil {
 		logger.Fatal("Failed to start server: ", err)
