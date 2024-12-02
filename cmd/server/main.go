@@ -16,52 +16,62 @@ import (
 	"github.com/otie173/odncore/internal/utils/webhook/discord"
 )
 
-func main() {
+var (
+	cfg config.Config
+)
+
+func systemSetup() {
 	logger.Register()
 
 	config.NewConfig()
 	if err := config.Load(); err != nil {
-		logger.Fatal("Error with load config: ", err)
+		logger.Fatal("Failed to load config: ", err)
 	}
-	cfg := config.GetConfig()
+	cfg = config.GetConfig()
 
 	if err := database.NewDatabase(); err != nil {
-		logger.Fatal("Error with create database: ", err)
+		logger.Fatal("Failed to create database: ", err)
 	}
+}
 
+func integrationsSetup() {
 	discord.InitDiscord()
+}
 
+func gameSetup() {
 	if err := world.InitWorld(); err != nil {
-		logger.Fatal("Error with init world: ", err)
+		logger.Fatal("Failed to init world: ", err)
 	}
 
 	if err := player.InitPlayer(cfg); err != nil {
-		logger.Fatal("Error with init player: ", err)
+		logger.Fatal("Failed init player: ", err)
 	}
+}
 
+func serverSetup() {
 	server.New(cfg.Address, cfg.MaxPlayers)
 	server.SetupReadHandler()
 	api.SetupRoutes()
 	if filesystem.FileExists(filesystem.WORLD_DIR_PATH + "id.odn") {
 		if err := world.LoadIdFile(); err != nil {
-			logger.Fatal("Error with load id file for world: ", err)
+			logger.Fatal("failed to load id file for world: ", err)
 		}
 	}
 	if filesystem.FileExists(filesystem.WORLD_DIR_PATH + "world.odn") {
 		if err := world.Load(); err != nil {
-			logger.Fatal("Error with load world: ", err)
+			logger.Fatal("Failed to load world: ", err)
 		}
 	}
+}
 
+func startServer() {
 	go func() {
 		server.Start()
 	}()
 	logger.Server("Server is running")
+}
 
-	signalChan := make(chan os.Signal, 1)
-	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)
-	<-signalChan
-
+func shutdownServer() {
 	logger.Server("Shutting down server")
 	if err := server.Stop(); err != nil {
 		logger.Error("Error with stop the server: ", err)
@@ -84,4 +94,17 @@ func main() {
 			logger.Error("Errorw with save world: ", err)
 		}
 	}
+}
+
+func main() {
+	systemSetup()
+	integrationsSetup()
+	gameSetup()
+	serverSetup()
+	startServer()
+
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)
+	<-signalChan
+	shutdownServer()
 }
