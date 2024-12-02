@@ -19,7 +19,7 @@ In the **docs/** folder you can find information such as:
 - how to set up the config and what each setting is responsible for
 
 ## Contributing
-Odncore is open source for a reason. Anyone can contribute. If you have any difficulties, please contact me via Discord. In order for your changes to be accepted, they must:
+Odncore is open source. Anyone can contribute. In order for your changes to be accepted, they must:
 - the code must be easy to read and understandable
 - your changes must fit the basic idea of the architecture: simplicity
 
