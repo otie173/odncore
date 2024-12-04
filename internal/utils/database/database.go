@@ -12,7 +12,7 @@ const (
 	PLAYER_DATA_PATH string = "./players/db/"
 )
 
-func NewDatabase() error {
+func InitDB() error {
 	var err error
 	db, err = leveldb.OpenFile(PLAYER_DATA_PATH, nil)
 	if err != nil {

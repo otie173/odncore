@@ -16,29 +16,26 @@ import (
 	"github.com/otie173/odncore/internal/utils/webhook/discord"
 )
 
-var (
-	cfg config.Config
-)
+func initSystem() config.Config {
+	logger.InitLogger()
 
-func systemSetup() {
-	logger.Register()
-
-	config.NewConfig()
+	config.InitConfig()
 	if err := config.Load(); err != nil {
 		logger.Fatal("Failed to load config: ", err)
 	}
-	cfg = config.GetConfig()
+	cfg := config.GetConfig()
 
-	if err := database.NewDatabase(); err != nil {
+	if err := database.InitDB(); err != nil {
 		logger.Fatal("Failed to create database: ", err)
 	}
+	return cfg
 }
 
-func integrationsSetup() {
+func initIntegrations() {
 	discord.InitDiscord()
 }
 
-func gameSetup() {
+func initGame(cfg config.Config) {
 	if err := world.InitWorld(); err != nil {
 		logger.Fatal("Failed to init world: ", err)
 	}
@@ -48,13 +45,12 @@ func gameSetup() {
 	}
 }
 
-func serverSetup() {
-	server.New(cfg.Address, cfg.MaxPlayers)
-	server.SetupReadHandler()
-	api.SetupRoutes()
+func initCore(cfg config.Config) {
+	server.InitServer(cfg.Address, cfg.MaxPlayers)
+	server.InitHandler()
 	if filesystem.FileExists(filesystem.WORLD_DIR_PATH + "id.odn") {
 		if err := world.LoadIdFile(); err != nil {
-			logger.Fatal("failed to load id file for world: ", err)
+			logger.Fatal("Failed to load id file for world: ", err)
 		}
 	}
 	if filesystem.FileExists(filesystem.WORLD_DIR_PATH + "world.odn") {
@@ -64,9 +60,10 @@ func serverSetup() {
 	}
 }
 
-func startServer() {
+func initServer() {
 	go func() {
-		server.Start()
+		r := api.InitRoutes()
+		server.Start(r)
 	}()
 	logger.Server("Server is running")
 }
@@ -74,34 +71,34 @@ func startServer() {
 func shutdownServer() {
 	logger.Server("Shutting down server")
 	if err := server.Stop(); err != nil {
-		logger.Error("Error with stop the server: ", err)
+		logger.Error("Failed to stop the server: ", err)
 	}
 
 	if err := config.Save(); err != nil {
-		logger.Error("Error with save config: ", err)
+		logger.Error("Failed to save config: ", err)
 	}
 
 	if err := database.Save(); err != nil {
-		logger.Error("Error with save database: ", err)
+		logger.Error("Failed save database: ", err)
 	}
 	if !world.IsIdWaiting {
 		if err := world.SaveId(); err != nil {
-			logger.Error("Error with save id file: ", err)
+			logger.Error("Failed to save id file: ", err)
 		}
 	}
 	if !world.IsWorldWaiting {
 		if err := world.Save(); err != nil {
-			logger.Error("Errorw with save world: ", err)
+			logger.Error("Failed to save world: ", err)
 		}
 	}
 }
 
 func main() {
-	systemSetup()
-	integrationsSetup()
-	gameSetup()
-	serverSetup()
-	startServer()
+	cfg := initSystem()
+	initIntegrations()
+	initGame(cfg)
+	initCore(cfg)
+	initServer()
 
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)

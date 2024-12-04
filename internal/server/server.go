@@ -40,7 +40,7 @@ type ServerInfo struct {
 	MaxPlayers       int    `json:"max_players"`
 }
 
-func New(address string, maxPlayersCount int) {
+func InitServer(address string, maxPlayersCount int) {
 	m := melody.New()
 	m.Config.MaxMessageSize = maxBufferSize
 

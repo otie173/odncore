@@ -21,7 +21,7 @@ type Config struct {
 	DiscordWebhookName    string `json:"discord_webhook_name"`
 }
 
-func NewConfig() {
+func InitConfig() {
 	cfg = Config{
 		Address:    "0.0.0.0:8080",
 		MaxPlayers: 16,

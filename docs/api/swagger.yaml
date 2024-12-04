@@ -1,0 +1,214 @@
+basePath: /api/v1
+definitions:
+  auth.PlayerAuth:
+    properties:
+      nickname:
+        type: string
+      password:
+        type: string
+    type: object
+  player.Player:
+    properties:
+      nickname:
+        type: string
+      targetX:
+        type: number
+      targetY:
+        type: number
+      x:
+        type: number
+      "y":
+        type: number
+    type: object
+  server.ServerInfo:
+    properties:
+      address:
+        type: string
+      description:
+        type: string
+      max_players:
+        type: integer
+      name:
+        type: string
+      players_connected:
+        type: integer
+    type: object
+  server.ServerStatus:
+    properties:
+      id_waiting:
+        type: boolean
+      world_waiting:
+        type: boolean
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API server for Odinbit game
+  license:
+    name: MIT
+    url: https://opensource.org/license/mit
+  title: Odncore API
+  version: "1.0"
+paths:
+  /player/auth:
+    post:
+      consumes:
+      - application/json
+      description: Register new player or login existing player
+      parameters:
+      - description: Player authentication data
+        in: body
+        name: playerAuth
+        required: true
+        schema:
+          $ref: '#/definitions/auth.PlayerAuth'
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: FAIL
+          schema:
+            type: string
+      summary: Authenticate player
+      tags:
+      - player
+  /player/getpdata:
+    get:
+      consumes:
+      - application/json
+      description: Get player's saved data
+      parameters:
+      - description: Player nickname
+        in: header
+        name: Session-Nickname
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/player.Player'
+        "404":
+          description: Player not found
+          schema:
+            type: string
+      summary: Get player data
+      tags:
+      - player
+  /player/loadpdata:
+    post:
+      consumes:
+      - application/json
+      description: Save player's current state
+      parameters:
+      - description: Player nickname
+        in: header
+        name: Session-Nickname
+        required: true
+        type: string
+      - description: Player data to save
+        in: body
+        name: playerData
+        required: true
+        schema:
+          $ref: '#/definitions/player.Player'
+      responses:
+        "200":
+          description: OK
+      summary: Save player data
+      tags:
+      - player
+  /server/info:
+    get:
+      consumes:
+      - application/json
+      description: Get information about the server
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/server.ServerInfo'
+      summary: Get server info
+      tags:
+      - server
+  /server/status:
+    get:
+      consumes:
+      - application/json
+      description: Get current server status
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/server.ServerStatus'
+      summary: Get server status
+      tags:
+      - server
+  /world/getworld:
+    get:
+      description: Get current world state as binary data
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: World binary data
+          schema:
+            type: string
+      summary: Get world data
+      tags:
+      - world
+  /world/loadid:
+    post:
+      consumes:
+      - application/json
+      description: Load world identification data
+      parameters:
+      - description: World ID data
+        in: body
+        name: idData
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      summary: Load world ID
+      tags:
+      - world
+  /world/loadworld:
+    post:
+      consumes:
+      - application/octet-stream
+      description: Load world state data from binary file
+      parameters:
+      - description: World binary data
+        format: binary
+        in: body
+        name: worldData
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+      summary: Load world data
+      tags:
+      - world
+swagger: "2.0"
+tags:
+- description: Server management endpoints
+  name: server
+- description: World management endpoints
+  name: world
+- description: Player management endpoints
+  name: player

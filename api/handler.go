@@ -16,6 +16,13 @@ import (
 	"github.com/otie173/odncore/internal/utils/logger"
 )
 
+// @Summary Get server status
+// @Description Get current server status
+// @Tags server
+// @Accept json
+// @Produce json
+// @Success 200 {object} server.ServerStatus
+// @Router /server/status [get]
 func StatusHandler(w http.ResponseWriter, r *http.Request) {
 	status := server.GetStatus()
 	if err := json.NewEncoder(w).Encode(status); err != nil {
@@ -23,6 +30,13 @@ func StatusHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// @Summary Get server info
+// @Description Get information about the server
+// @Tags server
+// @Accept json
+// @Produce json
+// @Success 200 {object} server.ServerInfo
+// @Router /server/info [get]
 func InfoHandler(w http.ResponseWriter, r *http.Request) {
 	info := server.GetInfo(config.GetConfig())
 	if err := json.NewEncoder(w).Encode(info); err != nil {
@@ -30,6 +44,15 @@ func InfoHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// @Summary Authenticate player
+// @Description Register new player or login existing player
+// @Tags player
+// @Accept json
+// @Produce plain
+// @Param playerAuth body auth.PlayerAuth true "Player authentication data"
+// @Success 200 {string} string "OK"
+// @Failure 400 {string} string "FAIL"
+// @Router /player/auth [post]
 func AuthHandler(w http.ResponseWriter, r *http.Request) {
 	var playerAuth auth.PlayerAuth
 
@@ -55,6 +78,15 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// @Summary Get player data
+// @Description Get player's saved data
+// @Tags player
+// @Accept json
+// @Produce json
+// @Param Session-Nickname header string true "Player nickname"
+// @Success 200 {object} player.Player
+// @Failure 404 {string} string "Player not found"
+// @Router /player/getpdata [get]
 func GetPDataHandler(w http.ResponseWriter, r *http.Request) {
 	playerNickname := r.Header.Get("Session-Nickname")
 
@@ -71,6 +103,14 @@ func GetPDataHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// @Summary Save player data
+// @Description Save player's current state
+// @Tags player
+// @Accept json
+// @Param Session-Nickname header string true "Player nickname"
+// @Param playerData body player.Player true "Player data to save"
+// @Success 200
+// @Router /player/loadpdata [post]
 func LoadPDataHandler(w http.ResponseWriter, r *http.Request) {
 	playerNickname := r.Header.Get("Session-Nickname")
 
@@ -85,6 +125,13 @@ func LoadPDataHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// @Summary Load world ID
+// @Description Load world identification data
+// @Tags world
+// @Accept json
+// @Param idData body string true "World ID data"
+// @Success 200
+// @Router /world/loadid [post]
 func LoadIdHandler(w http.ResponseWriter, r *http.Request) {
 	idData, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -97,6 +144,12 @@ func LoadIdHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// @Summary Get world data
+// @Description Get current world state as binary data
+// @Tags world
+// @Produce octet-stream
+// @Success 200 {string} binary "World binary data"
+// @Router /world/getworld [get]
 func GetWorldHandler(w http.ResponseWriter, r *http.Request) {
 	world.Save()
 
@@ -108,6 +161,13 @@ func GetWorldHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(worldData)
 }
 
+// @Summary Load world data
+// @Description Load world state data from binary file
+// @Tags world
+// @Accept octet-stream
+// @Param worldData body string true "World binary data" format(binary)
+// @Success 200
+// @Router /world/loadworld [post]
 func LoadWorldHandler(w http.ResponseWriter, r *http.Request) {
 	worldData, err := io.ReadAll(r.Body)
 	if err != nil {

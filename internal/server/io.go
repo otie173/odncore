@@ -65,7 +65,7 @@ func handleRequest(session *melody.Session, opcode byte, data []byte) {
 	}
 }
 
-func SetupReadHandler() {
+func InitHandler() {
 	websocket.HandleMessageBinary(func(s *melody.Session, b []byte) {
 		handleRequest(s, b[0], b[1:])
 	})

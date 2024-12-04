@@ -3,13 +3,14 @@ package server
 import (
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
 	"github.com/olahol/melody"
 	"github.com/otie173/odncore/internal/game/player"
 	"github.com/otie173/odncore/internal/utils/logger"
 )
 
-func Start() {
-	http.HandleFunc("GET /ws", func(res http.ResponseWriter, req *http.Request) {
+func Start(r *chi.Mux) {
+	r.HandleFunc("GET /ws", func(res http.ResponseWriter, req *http.Request) {
 		websocket.HandleRequest(res, req)
 	})
 
@@ -31,11 +32,14 @@ func Start() {
 		if rejected == nil && playersConnected > 0 {
 			playersConnected--
 			player.Remove(sessionNickname)
+			if err := sendPlayersList(); err != nil {
+				logger.Error("Failed to send players list to clients: ", err)
+			}
 			logger.Player(sessionNickname, "left the game")
 		}
 	})
 	logger.Info("Server started on address", addr)
-	if err := http.ListenAndServe(addr, nil); err != nil {
+	if err := http.ListenAndServe(addr, r); err != nil {
 		logger.Fatal("Failed to start server: ", err)
 	}
 }
