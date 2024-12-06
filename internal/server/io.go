@@ -99,11 +99,9 @@ func sendPlayersList() error {
 	list := player.GetList()
 	data, err := msgpack.Marshal(&list)
 	if err != nil {
-		logger.Error("Failed to unmarshal players list: ", err)
 		return err
 	}
 	if err := websocket.BroadcastBinary(append([]byte{playerPacket, playerList}, data...)); err != nil {
-		logger.Error("Failed to broadcast player list: ", err)
 		return err
 	}
 	return nil

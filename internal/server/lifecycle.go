@@ -32,8 +32,10 @@ func Start(r *chi.Mux) {
 		if rejected == nil && playersConnected > 0 {
 			playersConnected--
 			player.Remove(sessionNickname)
-			if err := sendPlayersList(); err != nil {
-				logger.Error("Failed to send players list to clients: ", err)
+			if !session.IsClosed() {
+				if err := sendPlayersList(); err != nil {
+					logger.Error("Failed to send players list to clients: ", err)
+				}
 			}
 			logger.Player(sessionNickname, "left the game")
 		}
