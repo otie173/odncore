@@ -29,7 +29,6 @@ func handleRequest(session *melody.Session, opcode byte, data []byte) {
 				typeconv.GetBool(packet["Passable"]),
 			)
 			sendBlockPacket(session, blockAdd, typeconv.GetFloat32(packet["X"]), typeconv.GetFloat32(packet["Y"]), typeconv.GetPtrUint32(packet["Texture"]))
-
 		case blockRemove:
 			world.RemoveBlock(
 				typeconv.GetFloat32(packet["X"]),

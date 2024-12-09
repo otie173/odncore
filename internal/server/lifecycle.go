@@ -9,6 +9,10 @@ import (
 	"github.com/otie173/odncore/internal/utils/logger"
 )
 
+var (
+	isShuttingDown bool
+)
+
 func Start(r *chi.Mux) {
 	r.HandleFunc("GET /ws", func(res http.ResponseWriter, req *http.Request) {
 		websocket.HandleRequest(res, req)
@@ -22,22 +26,29 @@ func Start(r *chi.Mux) {
 			session.Close()
 			return
 		}
+
 		playersConnected++
 		logger.Player(sessionNickname, "joined the game")
 	})
 
 	websocket.HandleDisconnect(func(session *melody.Session) {
 		sessionNickname := session.Request.Header.Get("Session-Nickname")
+
+		if isShuttingDown == true {
+			logger.Player(sessionNickname, "disconnected during shutdown")
+			return
+		}
+
 		rejected, _ := session.Get("rejected")
 		if rejected == nil && playersConnected > 0 {
 			playersConnected--
 			player.Remove(sessionNickname)
-			if !session.IsClosed() {
+			if isShuttingDown == false {
 				if err := sendPlayersList(); err != nil {
 					logger.Error("Failed to send players list to clients: ", err)
 				}
+				logger.Player(sessionNickname, "left the game")
 			}
-			logger.Player(sessionNickname, "left the game")
 		}
 	})
 	logger.Info("Server started on address", addr)
@@ -47,6 +58,8 @@ func Start(r *chi.Mux) {
 }
 
 func Stop() error {
+	isShuttingDown = true
+
 	if err := websocket.Close(); err != nil {
 		return err
 	}
