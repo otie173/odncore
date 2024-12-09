@@ -1,24 +1,52 @@
 package player
 
-var (
-	players map[string]Player
+import (
+	"net"
+	"os"
+
+	"github.com/otie173/odncore/internal/utils/config"
+	"github.com/otie173/odncore/internal/utils/filesystem"
 )
 
-type Player struct {
-	Nickname string
-	X        float32
-	Y        float32
-	TargetX  float32
-	TargetY  float32
+var (
+	players map[net.Addr]string
+)
+
+func InitPlayer(cfg config.Config) error {
+	dirs := []string{filesystem.PLAYERS_DIR_PATH, filesystem.PLAYER_DATA_DIR_PATH, filesystem.PLAYER_DB_PATH}
+
+	for _, path := range dirs {
+		if !filesystem.DirExists(path) {
+			err := os.Mkdir(path, 0755)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	players = make(map[net.Addr]string, cfg.MaxPlayers)
+	return nil
 }
 
-func ChangePosition(nickname string, x, y, targetX, targetY float32) {
-	if entry, ok := players[nickname]; ok {
-		entry.X = x
-		entry.Y = y
-		entry.TargetX = targetX
-		entry.TargetY = targetY
+func Add(addr net.Addr, nickname string) {
+	players[addr] = nickname
+}
 
-		players[nickname] = entry
+func Remove(addr net.Addr) {
+	delete(players, addr)
+}
+
+func Save(nickname string, data []byte) error {
+	if err := os.WriteFile(filesystem.PLAYER_DATA_DIR_PATH+nickname+".odn", data, 0644); err != nil {
+		return err
 	}
+	return nil
+}
+
+func Load(nickname string) ([]byte, error) {
+	data, err := os.ReadFile(filesystem.PLAYER_DATA_DIR_PATH + nickname + ".odn")
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
 }

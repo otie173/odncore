@@ -28,6 +28,7 @@ func Start(r *chi.Mux) {
 		}
 
 		playersConnected++
+		player.Add(session.RemoteAddr(), sessionNickname)
 		logger.Player(sessionNickname, "joined the game")
 	})
 
@@ -42,13 +43,8 @@ func Start(r *chi.Mux) {
 		rejected, _ := session.Get("rejected")
 		if rejected == nil && playersConnected > 0 {
 			playersConnected--
-			player.Remove(sessionNickname)
-			if isShuttingDown == false {
-				if err := sendPlayersList(); err != nil {
-					logger.Error("Failed to send players list to clients: ", err)
-				}
-				logger.Player(sessionNickname, "left the game")
-			}
+			player.Remove(session.RemoteAddr())
+			logger.Player(sessionNickname, "left the game")
 		}
 	})
 	logger.Info("Server started on address", addr)

@@ -19,12 +19,6 @@ const (
 	blockPacket byte = iota
 	blockAdd
 	blockRemove
-
-	playerPacket
-	playerAdd
-	playerRemove
-	playerList
-	playerMove
 )
 
 type ServerStatus struct {

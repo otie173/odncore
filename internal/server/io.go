@@ -2,7 +2,6 @@ package server
 
 import (
 	"github.com/olahol/melody"
-	"github.com/otie173/odncore/internal/game/player"
 	"github.com/otie173/odncore/internal/game/world"
 	"github.com/otie173/odncore/internal/utils/logger"
 	"github.com/otie173/odncore/internal/utils/typeconv"
@@ -38,29 +37,6 @@ func handleRequest(session *melody.Session, opcode byte, data []byte) {
 				logger.Error("Failed to send block packet: ", err)
 			}
 		}
-	case playerPacket:
-		if err := msgpack.Unmarshal(data, &packet); err != nil {
-			logger.Error("Failed to unmarshal player packet: ", err)
-		}
-
-		switch typeconv.GetByte(packet["Action"]) {
-		case playerMove:
-			if err := sendPlayerMove(data); err != nil {
-				logger.Error("Failed to send player move packet: ", err)
-			}
-		case playerAdd:
-			player.Add(
-				session.Request.Header.Get("Session-Nickname"),
-				typeconv.GetFloat32(packet["X"]),
-				typeconv.GetFloat32(packet["Y"]),
-				typeconv.GetFloat32(packet["TargetX"]),
-				typeconv.GetFloat32(packet["TargetY"]),
-			)
-
-			if err := sendPlayersList(); err != nil {
-				logger.Errorf("Failed to send updated players list: %v", err)
-			}
-		}
 	}
 }
 
@@ -88,27 +64,6 @@ func sendBlockPacket(sender *melody.Session, action byte, x, y float32, texture 
 	if err := websocket.BroadcastBinaryFilter(append([]byte{blockPacket}, binaryPacket...), func(session *melody.Session) bool {
 		return sender != session
 	}); err != nil {
-		logger.Error("Error with broadcast block packet: ", err)
-		return err
-	}
-	return nil
-}
-
-func sendPlayersList() error {
-	list := player.GetList()
-	data, err := msgpack.Marshal(&list)
-	if err != nil {
-		return err
-	}
-	if err := websocket.BroadcastBinary(append([]byte{playerPacket, playerList}, data...)); err != nil {
-		return err
-	}
-	return nil
-}
-
-func sendPlayerMove(data []byte) error {
-	if err := websocket.BroadcastBinary(append([]byte{playerPacket, playerMove}, data...)); err != nil {
-		logger.Error("Failed to broadcast player move data: ", err)
 		return err
 	}
 	return nil
