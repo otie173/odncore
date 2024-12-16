@@ -7,19 +7,6 @@ definitions:
       password:
         type: string
     type: object
-  player.Player:
-    properties:
-      nickname:
-        type: string
-      targetX:
-        type: number
-      targetY:
-        type: number
-      x:
-        type: number
-      "y":
-        type: number
-    type: object
   server.ServerInfo:
     properties:
       address:
@@ -40,7 +27,30 @@ definitions:
       world_waiting:
         type: boolean
     type: object
-host: localhost:8080
+  world.WorldInfo:
+    properties:
+      axes_count:
+        type: integer
+      big_stones_count:
+        type: integer
+      bones_generated:
+        type: boolean
+      pickaxes_count:
+        type: integer
+      saplings_count:
+        type: integer
+      seeds_count:
+        type: integer
+      shovels_count:
+        type: integer
+      small_stones_count:
+        type: integer
+      structures_generated:
+        type: boolean
+      trees_count:
+        type: integer
+    type: object
+host: 0.0.0.0:8080
 info:
   contact: {}
   description: API server for Odinbit game
@@ -93,7 +103,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/player.Player'
+            items:
+              type: integer
+            type: array
         "404":
           description: Player not found
           schema:
@@ -117,7 +129,9 @@ paths:
         name: playerData
         required: true
         schema:
-          $ref: '#/definitions/player.Player'
+          items:
+            type: integer
+          type: array
       responses:
         "200":
           description: OK
@@ -156,22 +170,37 @@ paths:
       - server
   /world/getworld:
     get:
-      description: Get current world state as binary data
+      description: Get world in binary format
       produces:
       - application/octet-stream
       responses:
         "200":
           description: World binary data
           schema:
-            type: string
-      summary: Get world data
+            items:
+              type: integer
+            type: array
+      summary: Get world
+      tags:
+      - world
+  /world/getworldinfo:
+    get:
+      description: Get world info in json format
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/world.WorldInfo'
+      summary: Get world info
       tags:
       - world
   /world/loadid:
     post:
       consumes:
       - application/json
-      description: Load world identification data
+      description: Load world id data
       parameters:
       - description: World ID data
         in: body
@@ -189,7 +218,7 @@ paths:
     post:
       consumes:
       - application/octet-stream
-      description: Load world state data from binary file
+      description: Load world from binary file
       parameters:
       - description: World binary data
         format: binary
@@ -201,7 +230,22 @@ paths:
       responses:
         "200":
           description: OK
-      summary: Load world data
+      summary: Load world
+      tags:
+      - world
+  /world/loadworldinfo:
+    post:
+      consumes:
+      - application/octet-stream
+      description: Load world info in json format
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: integer
+            type: array
+      summary: Load world info
       tags:
       - world
 swagger: "2.0"

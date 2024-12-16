@@ -85,7 +85,10 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/player.Player"
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
                         }
                     },
                     "404": {
@@ -121,7 +124,10 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/player.Player"
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
                         }
                     }
                 ],
@@ -180,19 +186,42 @@ const docTemplate = `{
         },
         "/world/getworld": {
             "get": {
-                "description": "Get current world state as binary data",
+                "description": "Get world in binary format",
                 "produces": [
                     "application/octet-stream"
                 ],
                 "tags": [
                     "world"
                 ],
-                "summary": "Get world data",
+                "summary": "Get world",
                 "responses": {
                     "200": {
                         "description": "World binary data",
                         "schema": {
-                            "type": "string"
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/world/getworldinfo": {
+            "get": {
+                "description": "Get world info in json format",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "world"
+                ],
+                "summary": "Get world info",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/world.WorldInfo"
                         }
                     }
                 }
@@ -200,7 +229,7 @@ const docTemplate = `{
         },
         "/world/loadid": {
             "post": {
-                "description": "Load world identification data",
+                "description": "Load world id data",
                 "consumes": [
                     "application/json"
                 ],
@@ -228,14 +257,14 @@ const docTemplate = `{
         },
         "/world/loadworld": {
             "post": {
-                "description": "Load world state data from binary file",
+                "description": "Load world from binary file",
                 "consumes": [
                     "application/octet-stream"
                 ],
                 "tags": [
                     "world"
                 ],
-                "summary": "Load world data",
+                "summary": "Load world",
                 "parameters": [
                     {
                         "format": "binary",
@@ -254,6 +283,29 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/world/loadworldinfo": {
+            "post": {
+                "description": "Load world info in json format",
+                "consumes": [
+                    "application/octet-stream"
+                ],
+                "tags": [
+                    "world"
+                ],
+                "summary": "Load world info",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -265,26 +317,6 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
-                }
-            }
-        },
-        "player.Player": {
-            "type": "object",
-            "properties": {
-                "nickname": {
-                    "type": "string"
-                },
-                "targetX": {
-                    "type": "number"
-                },
-                "targetY": {
-                    "type": "number"
-                },
-                "x": {
-                    "type": "number"
-                },
-                "y": {
-                    "type": "number"
                 }
             }
         },
@@ -318,6 +350,41 @@ const docTemplate = `{
                     "type": "boolean"
                 }
             }
+        },
+        "world.WorldInfo": {
+            "type": "object",
+            "properties": {
+                "axes_count": {
+                    "type": "integer"
+                },
+                "big_stones_count": {
+                    "type": "integer"
+                },
+                "bones_generated": {
+                    "type": "boolean"
+                },
+                "pickaxes_count": {
+                    "type": "integer"
+                },
+                "saplings_count": {
+                    "type": "integer"
+                },
+                "seeds_count": {
+                    "type": "integer"
+                },
+                "shovels_count": {
+                    "type": "integer"
+                },
+                "small_stones_count": {
+                    "type": "integer"
+                },
+                "structures_generated": {
+                    "type": "boolean"
+                },
+                "trees_count": {
+                    "type": "integer"
+                }
+            }
         }
     },
     "tags": [
@@ -339,7 +406,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8080",
+	Host:             "0.0.0.0:8080",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "Odncore API",

@@ -10,7 +10,7 @@
         },
         "version": "1.0"
     },
-    "host": "localhost:8080",
+    "host": "0.0.0.0:8080",
     "basePath": "/api/v1",
     "paths": {
         "/player/auth": {
@@ -79,7 +79,10 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/player.Player"
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
                         }
                     },
                     "404": {
@@ -115,7 +118,10 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/player.Player"
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
                         }
                     }
                 ],
@@ -174,19 +180,42 @@
         },
         "/world/getworld": {
             "get": {
-                "description": "Get current world state as binary data",
+                "description": "Get world in binary format",
                 "produces": [
                     "application/octet-stream"
                 ],
                 "tags": [
                     "world"
                 ],
-                "summary": "Get world data",
+                "summary": "Get world",
                 "responses": {
                     "200": {
                         "description": "World binary data",
                         "schema": {
-                            "type": "string"
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/world/getworldinfo": {
+            "get": {
+                "description": "Get world info in json format",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "world"
+                ],
+                "summary": "Get world info",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/world.WorldInfo"
                         }
                     }
                 }
@@ -194,7 +223,7 @@
         },
         "/world/loadid": {
             "post": {
-                "description": "Load world identification data",
+                "description": "Load world id data",
                 "consumes": [
                     "application/json"
                 ],
@@ -222,14 +251,14 @@
         },
         "/world/loadworld": {
             "post": {
-                "description": "Load world state data from binary file",
+                "description": "Load world from binary file",
                 "consumes": [
                     "application/octet-stream"
                 ],
                 "tags": [
                     "world"
                 ],
-                "summary": "Load world data",
+                "summary": "Load world",
                 "parameters": [
                     {
                         "format": "binary",
@@ -248,6 +277,29 @@
                     }
                 }
             }
+        },
+        "/world/loadworldinfo": {
+            "post": {
+                "description": "Load world info in json format",
+                "consumes": [
+                    "application/octet-stream"
+                ],
+                "tags": [
+                    "world"
+                ],
+                "summary": "Load world info",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -259,26 +311,6 @@
                 },
                 "password": {
                     "type": "string"
-                }
-            }
-        },
-        "player.Player": {
-            "type": "object",
-            "properties": {
-                "nickname": {
-                    "type": "string"
-                },
-                "targetX": {
-                    "type": "number"
-                },
-                "targetY": {
-                    "type": "number"
-                },
-                "x": {
-                    "type": "number"
-                },
-                "y": {
-                    "type": "number"
                 }
             }
         },
@@ -310,6 +342,41 @@
                 },
                 "world_waiting": {
                     "type": "boolean"
+                }
+            }
+        },
+        "world.WorldInfo": {
+            "type": "object",
+            "properties": {
+                "axes_count": {
+                    "type": "integer"
+                },
+                "big_stones_count": {
+                    "type": "integer"
+                },
+                "bones_generated": {
+                    "type": "boolean"
+                },
+                "pickaxes_count": {
+                    "type": "integer"
+                },
+                "saplings_count": {
+                    "type": "integer"
+                },
+                "seeds_count": {
+                    "type": "integer"
+                },
+                "shovels_count": {
+                    "type": "integer"
+                },
+                "small_stones_count": {
+                    "type": "integer"
+                },
+                "structures_generated": {
+                    "type": "boolean"
+                },
+                "trees_count": {
+                    "type": "integer"
                 }
             }
         }
