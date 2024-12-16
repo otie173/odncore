@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -41,7 +42,7 @@ func initGame(cfg config.Config) {
 	}
 
 	if err := player.InitPlayer(cfg); err != nil {
-		logger.Fatal("Failed init player: ", err)
+		logger.Fatal("Failed to init player: ", err)
 	}
 }
 
@@ -58,11 +59,16 @@ func initCore(cfg config.Config) {
 			logger.Fatal("Failed to load world: ", err)
 		}
 	}
+	if filesystem.FileExists(filesystem.WORLD_DIR_PATH + "world_info.json") {
+		if err := world.LoadInfoFile(); err != nil {
+			logger.Fatal("Failed to load world info: ", err)
+		}
+	}
 }
 
-func initServer() {
+func initServer(cfg config.Config) {
 	go func() {
-		r := api.InitRoutes()
+		r := api.InitRoutes(cfg.Address)
 		server.Start(r)
 	}()
 	logger.Server("Server is running")
@@ -91,6 +97,12 @@ func shutdownServer() {
 			logger.Error("Failed to save world: ", err)
 		}
 	}
+	if !world.IsWorldInfoWaiting {
+		log.Println(world.IsWorldInfoWaiting)
+		if err := world.SaveInfo(); err != nil {
+			logger.Error("Failed to save world info: ", err)
+		}
+	}
 }
 
 func main() {
@@ -98,7 +110,7 @@ func main() {
 	initIntegrations()
 	initGame(cfg)
 	initCore(cfg)
-	initServer()
+	initServer(cfg)
 
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, os.Interrupt, syscall.SIGTERM)
