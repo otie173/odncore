@@ -1,9 +1,6 @@
 ![1730741125721](https://github.com/user-attachments/assets/be5e55ca-c7f4-41f7-9e13-717e094add34)
 # The idea
-The goal of the server is to be easy to use and understand, and this applies to:
-- the server code
-- how it works
-- the settings of the server itself
+The idea of the server is to be easy to use and understand
 
 Unlike servers of other games like Minecraft where the server controls all game logic, Odncore serves as a bridge between clients. It simply:
 - passes packets from client to client
