@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -59,11 +58,6 @@ func initCore(cfg config.Config) {
 			logger.Fatal("Failed to load world: ", err)
 		}
 	}
-	if filesystem.FileExists(filesystem.WORLD_DIR_PATH + "world_info.json") {
-		if err := world.LoadInfoFile(); err != nil {
-			logger.Fatal("Failed to load world info: ", err)
-		}
-	}
 }
 
 func initServer(cfg config.Config) {
@@ -95,12 +89,6 @@ func shutdownServer() {
 	if !world.IsWorldWaiting {
 		if err := world.Save(); err != nil {
 			logger.Error("Failed to save world: ", err)
-		}
-	}
-	if !world.IsWorldInfoWaiting {
-		log.Println(world.IsWorldInfoWaiting)
-		if err := world.SaveInfo(); err != nil {
-			logger.Error("Failed to save world info: ", err)
 		}
 	}
 }

@@ -29,26 +29,11 @@ type Block struct {
 	passable bool
 }
 
-type WorldInfo struct {
-	StructuresGenerated bool `json:"structures_generated"`
-	BonesGenerated      bool `json:"bones_generated"`
-	BigStonesCount      int  `json:"big_stones_count"`
-	SmallStonesCount    int  `json:"small_stones_count"`
-	TreesCount          int  `json:"trees_count"`
-	SaplingsCount       int  `json:"saplings_count"`
-	SeedsCount          int  `json:"seeds_count"`
-	PickaxesCount       int  `json:"pickaxes_count"`
-	AxesCount           int  `json:"axes_count"`
-	ShovelsCount        int  `json:"shovels_count"`
-}
-
 var (
-	world              map[Rectangle]Block
-	worldInfo          WorldInfo
-	id                 map[int]Texture2D
-	IsWorldWaiting     bool
-	IsWorldInfoWaiting bool
-	IsIdWaiting        bool
+	world          map[Rectangle]Block
+	id             map[int]Texture2D
+	IsWorldWaiting bool
+	IsIdWaiting    bool
 )
 
 const (
@@ -134,9 +119,6 @@ func InitWorld() error {
 
 	if !filesystem.FileExists(filesystem.WORLD_DIR_PATH + "world.odn") {
 		IsWorldWaiting = true
-	}
-	if !filesystem.FileExists(filesystem.WORLD_DIR_PATH + "world_info.json") {
-		IsWorldInfoWaiting = true
 	}
 	IsIdWaiting = true
 	return nil

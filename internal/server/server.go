@@ -22,9 +22,8 @@ const (
 )
 
 type ServerStatus struct {
-	IdWaiting        bool `json:"id_waiting"`
-	WorldWaiting     bool `json:"world_waiting"`
-	WorldInfoWaiting bool `json:"world_info_waiting"`
+	IdWaiting    bool `json:"id_waiting"`
+	WorldWaiting bool `json:"world_waiting"`
 }
 
 type ServerInfo struct {

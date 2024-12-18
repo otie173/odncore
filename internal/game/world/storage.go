@@ -1,11 +1,9 @@
 package world
 
 import (
-	"encoding/json"
 	"os"
 
 	"github.com/otie173/odncore/internal/utils/filesystem"
-	"github.com/otie173/odncore/internal/utils/logger"
 	"github.com/vmihailenco/msgpack/v5"
 )
 
@@ -153,34 +151,5 @@ func ByteToFile(data []byte) error {
 	if err := Load(); err != nil {
 		return err
 	}
-	return nil
-}
-
-func SaveInfo() error {
-	jsonData, err := json.Marshal(&worldInfo)
-	if err != nil {
-		return err
-	}
-
-	os.WriteFile(filesystem.WORLD_DIR_PATH+"world_info.json", jsonData, 0644)
-	return nil
-}
-
-func LoadInfoNetwork(data WorldInfo) {
-	worldInfo = data
-	IsWorldInfoWaiting = false
-}
-
-func LoadInfoFile() error {
-	jsonData, err := os.ReadFile(filesystem.WORLD_DIR_PATH + "world_info.json")
-	if err != nil {
-		logger.Error("Failed to read world info from file: ", err)
-	}
-
-	err = json.Unmarshal(jsonData, &worldInfo)
-	if err != nil {
-		logger.Error("Failed to unmarshal json data to worldInfo variable: ", err)
-	}
-	IsWorldInfoWaiting = false
 	return nil
 }

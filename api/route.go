@@ -36,10 +36,8 @@ func InitRoutes(addr string) *chi.Mux {
 				// @Tag.name world
 				// @Tag.description World management endpoints
 				world.Get("/getworld", GetWorldHandler)
-				world.Get("/getworldinfo", GetWorldInfoHandler)
 				world.Post("/loadid", LoadIdHandler)
 				world.Post("/loadworld", LoadWorldHandler)
-				world.Post("/loadworldinfo", LoadWorldInfoHandler)
 			})
 
 			v1.Route("/player", func(player chi.Router) {

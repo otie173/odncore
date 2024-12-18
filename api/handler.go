@@ -179,23 +179,3 @@ func LoadWorldHandler(w http.ResponseWriter, r *http.Request) {
 		logger.Error("Error with convert world bytes to file: ", err)
 	}
 }
-
-func GetWorldInfoHandler(w http.ResponseWriter, r *http.Request) {
-	world.SaveInfo()
-
-	data, err := os.ReadFile(filesystem.WORLD_DIR_PATH + "world_info.json")
-	if err != nil {
-		logger.Errorf("Failed to read world info file: %v", err)
-		return
-	}
-	w.Write(data)
-}
-
-func LoadWorldInfoHandler(w http.ResponseWriter, r *http.Request) {
-	var info world.WorldInfo
-	if err := json.NewEncoder(w).Encode(info); err != nil {
-		logger.Error("Failed to encode world info in json format: ", err)
-		return
-	}
-	world.LoadInfoNetwork(info)
-}
