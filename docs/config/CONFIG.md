@@ -9,7 +9,7 @@ This document describes all available configuration options for the game server.
 | server_name | string | Name of the server that will be displayed to players |
 | server_description | string | Description of the server that will be displayed to players |
 | address | string | Server binding address in format "ip:port" (e.g. "0.0.0.0:8080") |
-| max_player | number | Maximum number of players that can connect simultaneously |
+| max_player | int | Maximum number of players that can connect simultaneously |
 | discord_webhook_enabled | bool | Enables/disables Discord webhook integration |
 | discord_webhook_url | string | Discord webhook URL for server notifications |
 | discord_webhook_name | string | Custom name for Discord webhook messages |
