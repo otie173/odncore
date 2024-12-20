@@ -42,4 +42,4 @@ The game uses a hybrid architecture combining REST API for authentication and in
 
 ### 3. Game Communication Phase
 - All connected clients send game update packets to server
-- Server acts as a packet broadcaster, forwarding all received packets to al
+- Server acts as a packet broadcaster, forwarding all received packets to all
